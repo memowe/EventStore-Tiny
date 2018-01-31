@@ -19,7 +19,8 @@ WriteMakefile(
     },
     MIN_PERL_VERSION    => '5.10.1',
     PREREQ_PM           => {
-        'Mo' => '0.38',
+        'Mo'            => '0.38',
+        'UUID::Tiny'    => '1.04',
     },
     test                => {TESTS => 't/*.t'}
 );
