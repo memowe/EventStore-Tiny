@@ -59,15 +59,23 @@ subtest 'Application' => sub {
     # construct event stream with an array of events
     my $es = EventSourcing::Tiny::EventStream->new(events => _test_events);
 
-    # prepare a test state to be modified
-    my $init_foo    = 666;
-    my $state       = EventSourcing::Tiny::State->new;
-    $state->set(key => $init_foo);
+    subtest 'State given' => sub {
 
-    # apply all events and check result
-    $es->apply_to($state);
-    is $state->get('key') => sum($init_foo, @test_numbers),
-        'Correct chained application of all events';
+        # prepare a test state to be modified
+        my $init_foo    = 666;
+        my $state       = EventSourcing::Tiny::State->new;
+        $state->set(key => $init_foo);
+
+        # apply all events and check result
+        $es->apply_to($state);
+        is $state->get('key') => sum($init_foo, @test_numbers),
+            'Correct chained application of all events';
+    };
+
+    subtest 'No state given' => sub {
+        is $es->apply_to->get('key') => sum(@test_numbers),
+            'Correct chained application of all events';
+    };
 };
 
 done_testing;
