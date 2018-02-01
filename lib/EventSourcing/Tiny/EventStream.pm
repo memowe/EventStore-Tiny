@@ -31,5 +31,15 @@ sub apply_to {
     return $state;
 }
 
+sub substream {
+    my ($self, $predicate) = @_;
+
+    # filter events
+    my @events = grep {$predicate->($_)} @{$self->events};
+
+    # build new sub stream
+    return EventSourcing::Tiny::EventStream->new(events => \@events);
+}
+
 1;
 __END__
