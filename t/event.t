@@ -73,4 +73,22 @@ subtest 'Application' => sub {
     is $return => $state, 'Correct transformation return value';
 };
 
+subtest 'Event data' => sub {
+
+    # construct data-driven event
+    my $ev = EventSourcing::Tiny::Event->new(
+        name            => 'foo',
+        transformation  => sub {
+            my ($state, $data) = @_;
+            $state->set($data->{key} => 42);
+        },
+        data            => {key => 'quux'},
+    );
+
+    # apply to empty state
+    my $state = EventSourcing::Tiny::State->new;
+    $ev->apply_to($state);
+    is $state->get('quux') => 42, 'Correct state-update from data';
+};
+
 done_testing;
