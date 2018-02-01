@@ -12,5 +12,11 @@ has timestamp       => sub {time};
 has name            => required => 1;
 has transformation  => sub {sub {}};
 
+# lets transformation work on state and returns the result
+sub apply_to {
+    my ($self, $state) = @_;
+    return $self->transformation->($state);
+}
+
 1;
 __END__

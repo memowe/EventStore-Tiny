@@ -3,6 +3,8 @@ use warnings;
 
 use Test::More;
 
+use EventSourcing::Tiny::State;
+
 use_ok 'EventSourcing::Tiny::Event';
 
 subtest 'Default UUID' => sub {
@@ -41,6 +43,34 @@ subtest 'Construction arguments' => sub {
     # check
     is $ev->name => 'foo', 'Correct name';
     is $ev->transformation->(17) => 42, 'Correct transformation';
+};
+
+subtest 'Application' => sub {
+
+    # trivial event
+    my $ev_trivial = EventSourcing::Tiny::Event->new(
+        name            => 'foo',
+        transformation  => sub {42},
+    );
+    is $ev_trivial->apply_to(EventSourcing::Tiny::State->new) => 42,
+        'Correct result from trivial event';
+
+    # interesting event
+    my $ev = EventSourcing::Tiny::Event->new(
+        name            => 'bar',
+        transformation  => sub {
+            my $state = shift;
+            $state->set(quux => $state->get('quux') + 25);
+            return $state;
+        },
+    );
+
+    # interesting event Application
+    my $state = EventSourcing::Tiny::State->new;
+    $state->set(quux => 17);
+    my $return = $ev->apply_to($state);
+    is $state->get('quux') => 42, 'Correct modified state';
+    is $return => $state, 'Correct transformation return value';
 };
 
 done_testing;
