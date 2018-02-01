@@ -22,7 +22,7 @@ sub apply_to {
     my ($self, $state) = @_;
 
     # start with empty state object by default
-    $state //= EventSourcing::Tiny::State->new;
+    $state = EventSourcing::Tiny::State->new unless defined $state;
 
     # apply all events
     $state = $_->apply_to($state) for @{$self->events};
