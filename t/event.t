@@ -6,6 +6,7 @@ use Test::More;
 use EventSourcing::Tiny::State;
 
 use_ok 'EventSourcing::Tiny::Event';
+use_ok 'EventSourcing::Tiny::DataEvent';
 
 subtest 'Default UUID' => sub {
 
@@ -73,10 +74,10 @@ subtest 'Application' => sub {
     is $return => $state, 'Correct transformation return value';
 };
 
-subtest 'Event data' => sub {
+subtest 'Data event' => sub {
 
     # construct data-driven event
-    my $ev = EventSourcing::Tiny::Event->new(
+    my $ev = EventSourcing::Tiny::DataEvent->new(
         name            => 'foo',
         transformation  => sub {
             my ($state, $data) = @_;
@@ -89,6 +90,29 @@ subtest 'Event data' => sub {
     my $state = EventSourcing::Tiny::State->new;
     $ev->apply_to($state);
     is $state->get('quux') => 42, 'Correct state-update from data';
+};
+
+subtest 'Specialization' => sub {
+
+    # construct data-driven event
+    my $ev = EventSourcing::Tiny::Event->new(
+        name            => 'foo',
+        transformation  => sub {
+            my ($state, $data) = @_;
+            $state->set($data->{key} => 42);
+        },
+    );
+
+    # specialize
+    my $de = EventSourcing::Tiny::DataEvent->new_from_template(
+        $ev, {key => 'quux'}
+    );
+    isa_ok $de => 'EventSourcing::Tiny::DataEvent';
+
+    # apply to empty state
+    my $state = EventSourcing::Tiny::State->new;
+    $de->apply_to($state);
+    is $state->get('quux') => 42, 'Correct state-update from new data';
 };
 
 done_testing;
