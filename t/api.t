@@ -31,6 +31,14 @@ subtest 'Storing an event' => sub {
         return $state;
     });
 
+    # try to store unknown event
+    eval {
+        $est->store_event(UnknownEvent => {throw => 'exception plx'});
+        fail 'No exception thrown';
+    };
+    like $@ => qr/Unknown event: UnknownEvent!/,
+        'Correct exception for unknown event';
+
     # store an event
     is $est->events->length => 0, 'No events';
     $est->store_event(AnswerGiven => {answer => 42});
