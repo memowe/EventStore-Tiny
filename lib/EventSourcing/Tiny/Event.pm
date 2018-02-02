@@ -1,7 +1,4 @@
 package EventSourcing::Tiny::Event;
-
-use strict;
-use warnings;
 use Mo qw(default required);
 
 use UUID::Tiny qw(create_uuid_as_string);

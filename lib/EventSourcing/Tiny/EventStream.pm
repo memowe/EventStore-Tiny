@@ -1,7 +1,4 @@
 package EventSourcing::Tiny::EventStream;
-
-use strict;
-use warnings;
 use Mo 'default';
 
 has events => [];

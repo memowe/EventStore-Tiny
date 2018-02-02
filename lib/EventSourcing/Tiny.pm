@@ -1,7 +1,5 @@
 package EventSourcing::Tiny;
-
-use strict;
-use warnings;
+use Mo qw(default);
 
 our $VERSION = '0.01';
 

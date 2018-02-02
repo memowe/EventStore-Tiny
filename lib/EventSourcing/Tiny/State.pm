@@ -1,7 +1,4 @@
 package EventSourcing::Tiny::State;
-
-use strict;
-use warnings;
 use Mo qw(default build);
 
 has init    => {};
