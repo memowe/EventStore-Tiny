@@ -117,4 +117,28 @@ subtest 'Extract substream' => sub {
     };
 };
 
+subtest 'Time substreams' => sub {
+
+    # prepare events
+    my $events  = _test_events;
+    my $sep_ts  = $events->[0]->timestamp;
+    my $es      = EventSourcing::Tiny::EventStream->new(events => $events);
+
+    subtest 'Events until' => sub {
+        my $es_first = $es->until($sep_ts);
+        isa_ok $es_first => 'EventSourcing::Tiny::EventStream';
+        is $es_first->length => 1, 'Correct substream length';
+        is $es_first->apply_to->get('key') => $test_numbers[0],
+            'Correct event';
+    };
+
+    subtest 'Events after' => sub {
+        my $es_rest = $es->after($sep_ts);
+        isa_ok $es_rest => 'EventSourcing::Tiny::EventStream';
+        is $es_rest->length => 2, 'Correct substream length';
+        is $es_rest->apply_to->get('key') => sum(@test_numbers[1,2]),
+            'Correct events';
+    };
+};
+
 done_testing;

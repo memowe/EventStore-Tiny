@@ -41,5 +41,19 @@ sub substream {
     return EventSourcing::Tiny::EventStream->new(events => \@events);
 }
 
+sub until {
+    my ($self, $timestamp) = @_;
+
+    # all events until the given timestamp (including)
+    return $self->substream(sub {$_->timestamp <= $timestamp});
+}
+
+sub after {
+    my ($self, $timestamp) = @_;
+
+    # all events after the given timestamp (excluding)
+    return $self->substream(sub {$_->timestamp > $timestamp});
+}
+
 1;
 __END__
