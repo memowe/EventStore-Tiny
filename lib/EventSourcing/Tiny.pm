@@ -4,6 +4,7 @@ use Mo qw(default);
 use EventSourcing::Tiny::Event;
 use EventSourcing::Tiny::DataEvent;
 use EventSourcing::Tiny::EventStream;
+use EventSourcing::Tiny::Snapshot;
 
 use Clone qw(clone);
 
@@ -54,11 +55,17 @@ sub snapshot {
     my ($self, $timestamp) = @_;
 
     # no timestamp: last state
-    return $self->events->apply_to($self->init_state)
-        unless defined $timestamp;
+    return EventSourcing::Tiny::Snapshot->new(
+        state       => $self->events->apply_to($self->init_state),
+        timestamp   => $self->events->last_timestamp,
+    ) unless defined $timestamp;
 
     # everything until the given timestamp
-    return $self->events->until($timestamp)->apply_to($self->init_state);
+    my $events = $self->events->until($timestamp);
+    return EventSourcing::Tiny::Snapshot->new(
+        state       => $events->apply_to($self->init_state),
+        timestamp   => $events->last_timestamp,
+    );
 }
 
 1;

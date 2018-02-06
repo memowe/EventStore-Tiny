@@ -60,16 +60,21 @@ subtest 'Snapshot' => sub {
     $est->store_event(TestEvent => {foo => $_}) for qw(17 25 42);
 
     subtest 'Unspecified snapshot' => sub {
-        my $st = $est->snapshot;
-        isa_ok $st => 'EventSourcing::Tiny::State';
-        is $st->get('foo') => 84, 'Correct snapshot';
+        my $sn = $est->snapshot;
+        isa_ok $sn => 'EventSourcing::Tiny::Snapshot';
+        is $sn->timestamp => $est->events->last_timestamp,
+            'Correct snapshot timestamp';
+        isa_ok $sn->state => 'EventSourcing::Tiny::State';
+        is $sn->state->get('foo') => 84, 'Correct snapshot';
     };
 
     subtest 'Specified timestamp snapshot' => sub {
         my $sep_ts = $est->events->events->[1]->timestamp;
-        my $st = $est->snapshot($sep_ts);
-        isa_ok $st => 'EventSourcing::Tiny::State';
-        is $st->get('foo') => 42, 'Correct snapshot';
+        my $sn = $est->snapshot($sep_ts);
+        isa_ok $sn => 'EventSourcing::Tiny::Snapshot';
+        is $sn->timestamp => $sep_ts, 'Correct snapshot timestamp';
+        isa_ok $sn->state => 'EventSourcing::Tiny::State';
+        is $sn->state->get('foo') => 42, 'Correct snapshot';
     };
 };
 
