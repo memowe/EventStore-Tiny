@@ -54,17 +54,14 @@ sub init_state {
 sub snapshot {
     my ($self, $timestamp) = @_;
 
-    # no timestamp: last state
-    return EventSourcing::Tiny::Snapshot->new(
-        state       => $self->events->apply_to($self->init_state),
-        timestamp   => $self->events->last_timestamp,
-    ) unless defined $timestamp;
+    # decide which event (sub) stream to work on
+    my $es = $self->events;
+    $es = $es->until($timestamp) if defined $timestamp;
 
-    # everything until the given timestamp
-    my $events = $self->events->until($timestamp);
+    # done
     return EventSourcing::Tiny::Snapshot->new(
-        state       => $events->apply_to($self->init_state),
-        timestamp   => $events->last_timestamp,
+        state       => $es->apply_to($self->init_state),
+        timestamp   => $es->last_timestamp,
     );
 }
 
