@@ -84,12 +84,15 @@ subtest 'Extract substream' => sub {
     my $es = EventSourcing::Tiny::EventStream->new(events => _test_events);
 
     subtest 'Empty' => sub {
-        is $es->substream(sub {return})->length => 0, 'No events left';
+        my $empty = $es->substream(sub {return});
+        isa_ok $empty => 'EventSourcing::Tiny::EventStream';
+        is $empty->length => 0, 'No events left';
     };
 
     subtest 'First' => sub {
         my $count = 0;
         my $first = $es->substream(sub {$count++ == 0});
+        isa_ok $first => 'EventSourcing::Tiny::EventStream';
         is $first->length => 1, 'Only one event left';
 
         # check if it's the first
@@ -99,6 +102,7 @@ subtest 'Extract substream' => sub {
 
     subtest 'All' => sub {
         my $all = $es->substream(sub {1});
+        isa_ok $all => 'EventSourcing::Tiny::EventStream';
         is $all->length => $es->length, 'Same event count';
         is $all->apply_to->get('key') => $es->apply_to->get('key'),
             'Correct chained application of all events';
