@@ -5,10 +5,13 @@ use EventSourcing::Tiny::Event;
 use EventSourcing::Tiny::DataEvent;
 use EventSourcing::Tiny::EventStream;
 
+use Clone qw(clone);
+
 our $VERSION = '0.01';
 
 has registry    => {};
 has events      => sub {EventSourcing::Tiny::EventStream->new};
+has init_data   => {};
 
 sub register_event {
     my ($self, $name, $transformation) = @_;
@@ -38,6 +41,24 @@ sub store_event {
 
     # done
     $self->events->add_event($event);
+}
+
+sub init_state {
+    my $self = shift;
+
+    # build new state from cloned init data
+    return EventSourcing::Tiny::State->new(init => clone($self->init_data));
+}
+
+sub snapshot {
+    my ($self, $timestamp) = @_;
+
+    # no timestamp: last state
+    return $self->events->apply_to($self->init_state)
+        unless defined $timestamp;
+
+    # everything until the given timestamp
+    return $self->events->until($timestamp)->apply_to($self->init_state);
 }
 
 1;
