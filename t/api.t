@@ -48,4 +48,31 @@ subtest 'Storing an event' => sub {
     is $est->events->apply_to->get('answer') => 42, 'Correct event added';
 };
 
+subtest 'Snapshot' => sub {
+
+    # register test events
+    my $est = EventSourcing::Tiny->new;
+    $est->register_event(TestEvent => sub {
+        my ($state, $data) = @_;
+        $state->set(foo => ($state->get('foo') // 0) + $data->{foo});
+        return $state;
+    });
+
+    # insert test events
+    $est->store_event(TestEvent => {foo => $_}) for qw(17 25 42);
+
+    subtest 'Unspecified snapshot' => sub {
+        my $st = $est->snapshot;
+        isa_ok $st => 'EventSourcing::Tiny::State';
+        is $st->get('foo') => 84, 'Correct snapshot';
+    };
+
+    subtest 'Specified timestamp snapshot' => sub {
+        my $sep_ts = $est->events->events->[1]->timestamp;
+        my $st = $est->snapshot($sep_ts);
+        isa_ok $st => 'EventSourcing::Tiny::State';
+        is $st->get('foo') => 42, 'Correct snapshot';
+    };
+};
+
 done_testing;
