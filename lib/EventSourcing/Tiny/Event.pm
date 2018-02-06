@@ -21,7 +21,13 @@ sub BUILD {
 # lets transformation work on state and returns the result
 sub apply_to {
     my ($self, $state) = @_;
-    return $self->transformation->($state, $self->data);
+
+    # check if application by side-effect or return value
+    my $ret_val = $self->transformation->($state, $self->data);
+    return $ret_val if $ret_val->isa('EventSourcing::Tiny::State');
+
+    # returned something else: return original (modified) state
+    return $state;
 }
 
 1;

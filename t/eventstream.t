@@ -17,7 +17,6 @@ sub _test_events {
         my $add = $_;
         EventSourcing::Tiny::Event->new(name => 't', transformation => sub {
             $_[0]->set('key', ($_[0]->get('key') // 0) + $add);
-            return $_[0];
         })
     } @test_numbers];
 }
@@ -31,7 +30,7 @@ subtest 'Events at construction time' => sub {
     # test event list members by applying
     for my $i (0 .. $#test_numbers) {
         my $s = EventSourcing::Tiny::State->new;
-        is $es->events->[$i]->transformation->($s)->get('key')
+        is $es->events->[$i]->apply_to($s)->get('key')
             => $test_numbers[$i], "Correct transformation: $test_numbers[$i]";
     }
 };
@@ -49,7 +48,7 @@ subtest 'Appending events' => sub {
     # test event list members by applying
     for my $i (0 .. $#test_numbers) {
         my $s = EventSourcing::Tiny::State->new;
-        is $es->events->[$i]->transformation->($s)->get('key')
+        is $es->events->[$i]->apply_to($s)->get('key')
             => $test_numbers[$i], "Correct transformation: $test_numbers[$i]";
     }
 };

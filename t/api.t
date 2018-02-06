@@ -28,7 +28,6 @@ subtest 'Storing an event' => sub {
     $est->register_event(AnswerGiven => sub {
         my ($state, $data) = @_;
         $state->set(answer => $data->{answer});
-        return $state;
     });
 
     # try to store unknown event
@@ -55,7 +54,6 @@ subtest 'Snapshot' => sub {
     $est->register_event(TestEvent => sub {
         my ($state, $data) = @_;
         $state->set(foo => ($state->get('foo') // 0) + $data->{foo});
-        return $state;
     });
 
     # insert test events
