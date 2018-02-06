@@ -31,6 +31,9 @@ sub apply_to {
 sub substream {
     my ($self, $predicate) = @_;
 
+    # default predicate: take everything
+    $predicate = sub {1} unless defined $predicate;
+
     # filter events
     my @events = grep {$predicate->($_)} @{$self->events};
 

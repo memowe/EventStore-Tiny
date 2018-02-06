@@ -83,6 +83,14 @@ subtest 'Extract substream' => sub {
     # construct event stream with an array of events
     my $es = EventSourcing::Tiny::EventStream->new(events => _test_events);
 
+    subtest 'Default' => sub {
+        my $default = $es->substream;
+        isa_ok $default => 'EventSourcing::Tiny::EventStream';
+        is $default->length => $es->length, 'Same event count';
+        is $default->apply_to->get('key') => $es->apply_to->get('key'),
+            'Correct chained application of the default events';
+    };
+
     subtest 'Empty' => sub {
         my $empty = $es->substream(sub {return});
         isa_ok $empty => 'EventSourcing::Tiny::EventStream';
