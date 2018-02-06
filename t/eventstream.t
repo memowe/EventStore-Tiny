@@ -23,8 +23,11 @@ sub _test_events {
 
 subtest 'Events at construction time' => sub {
 
+    # prepare test event storage
+    my $tes = _test_events;
+
     # construct event stream with an array of events
-    my $es = EventSourcing::Tiny::EventStream->new(events => _test_events);
+    my $es = EventSourcing::Tiny::EventStream->new(events => $tes);
     is $es->length => scalar(@test_numbers), 'Right event count';
 
     # test event list members by applying
@@ -33,6 +36,12 @@ subtest 'Events at construction time' => sub {
         is $es->events->[$i]->apply_to($s)->get('key')
             => $test_numbers[$i], "Correct transformation: $test_numbers[$i]";
     }
+
+    # check limit timestamps
+    is $es->first_timestamp => $tes->[0]->timestamp,
+        'Correct first timestamp';
+    is $es->last_timestamp => $tes->[$#$tes]->timestamp,
+        'Correct last timestamp';
 };
 
 subtest 'Appending events' => sub {

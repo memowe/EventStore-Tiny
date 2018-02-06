@@ -15,6 +15,16 @@ sub length {
     return scalar @{$self->events};
 }
 
+sub first_timestamp {
+    my $self = shift;
+    return $self->events->[0]->timestamp;
+}
+
+sub last_timestamp {
+    my $self = shift;
+    return $self->events->[$self->length - 1]->timestamp;
+}
+
 sub apply_to {
     my ($self, $state) = @_;
 
