@@ -29,16 +29,16 @@ sub apply_to {
 }
 
 sub substream {
-    my ($self, $predicate) = @_;
+    my ($self, $selector) = @_;
 
-    # default predicate: take everything
-    $predicate = sub {1} unless defined $predicate;
+    # default selector: take everything
+    $selector = sub {1} unless defined $selector;
 
     # filter events
-    my @events = grep {$predicate->($_)} @{$self->events};
+    my @filtered = grep {$selector->($_)} @{$self->events};
 
     # build new sub stream
-    return EventSourcing::Tiny::EventStream->new(events => \@events);
+    return EventSourcing::Tiny::EventStream->new(events => \@filtered);
 }
 
 sub until {
