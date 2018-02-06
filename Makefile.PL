@@ -19,6 +19,7 @@ WriteMakefile(
     },
     MIN_PERL_VERSION    => '5.10.1',
     PREREQ_PM           => {
+        'Clone'         => '0.39',
         'Mo'            => '0.38',
         'UUID::Tiny'    => '1.04',
     },

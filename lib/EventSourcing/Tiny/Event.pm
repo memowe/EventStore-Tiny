@@ -1,14 +1,22 @@
 package EventSourcing::Tiny::Event;
-use Mo qw(default required);
+use Mo qw(default required build);
 
 use UUID::Tiny qw(create_uuid_as_string);
 use Time::HiRes qw(time);
 
 has uuid            => sub {create_uuid_as_string};
-has timestamp       => sub {time};
+has timestamp       => is => 'ro';
 has name            => required => 1;
 has transformation  => sub {sub {}};
 has data            => {};
+
+sub BUILD {
+    my $self = shift;
+
+    # make sure to set the timestamp non-lazy
+    # see Mo issue #36 @ github
+    $self->timestamp(time);
+}
 
 # lets transformation work on state and returns the result
 sub apply_to {
