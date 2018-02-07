@@ -3,8 +3,6 @@ use warnings;
 
 use Test::More;
 
-use EventStore::Tiny::State;
-
 use_ok 'EventStore::Tiny';
 
 subtest 'Registration' => sub {
@@ -16,7 +14,7 @@ subtest 'Registration' => sub {
     # register a simple event
     $est->register_event(AnswerGiven => sub {
         my ($state, $data) = @_;
-        $state->set(answer => $data->{answer});
+        $state->{answer} = $data->{answer};
     });
     is_deeply $est->event_names => ['AnswerGiven'], 'Event name is known';
 };
@@ -27,7 +25,7 @@ subtest 'Storing an event' => sub {
     my $est = EventStore::Tiny->new;
     $est->register_event(AnswerGiven => sub {
         my ($state, $data) = @_;
-        $state->set(answer => $data->{answer});
+        $state->{answer} = $data->{answer};
     });
 
     # try to store unknown event
@@ -44,7 +42,7 @@ subtest 'Storing an event' => sub {
     is $est->events->length => 1, 'One event after addition';
 
     # test if it's the right event
-    is $est->events->apply_to->get('answer') => 42, 'Correct event added';
+    is $est->events->apply_to->{answer} => 42, 'Correct event added';
 };
 
 subtest 'Snapshot' => sub {
@@ -53,7 +51,7 @@ subtest 'Snapshot' => sub {
     my $est = EventStore::Tiny->new;
     $est->register_event(TestEvent => sub {
         my ($state, $data) = @_;
-        $state->set(foo => ($state->get('foo') // 0) + $data->{foo});
+        $state->{foo} += $data->{foo};
     });
 
     # insert test events
@@ -64,8 +62,7 @@ subtest 'Snapshot' => sub {
         isa_ok $sn => 'EventStore::Tiny::Snapshot';
         is $sn->timestamp => $est->events->last_timestamp,
             'Correct snapshot timestamp';
-        isa_ok $sn->state => 'EventStore::Tiny::State';
-        is $sn->state->get('foo') => 84, 'Correct snapshot';
+        is $sn->state->{foo} => 84, 'Correct snapshot';
     };
 
     subtest 'Specified timestamp snapshot' => sub {
@@ -73,8 +70,7 @@ subtest 'Snapshot' => sub {
         my $sn = $est->snapshot($sep_ts);
         isa_ok $sn => 'EventStore::Tiny::Snapshot';
         is $sn->timestamp => $sep_ts, 'Correct snapshot timestamp';
-        isa_ok $sn->state => 'EventStore::Tiny::State';
-        is $sn->state->get('foo') => 42, 'Correct snapshot';
+        is $sn->state->{foo} => 42, 'Correct snapshot';
     };
 };
 

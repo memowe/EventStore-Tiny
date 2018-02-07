@@ -3,8 +3,6 @@ use warnings;
 
 use Test::More;
 
-use EventStore::Tiny::State;
-
 use_ok 'EventStore::Tiny::Event';
 use_ok 'EventStore::Tiny::DataEvent';
 
@@ -55,12 +53,12 @@ subtest 'Application' => sub {
             name            => 'foo',
             transformation  => sub {
                 my $state = shift;
-                $state->set(answer => 42);
+                $state->{answer} = 42;
                 return $state;
             },
         );
-        my $st = $ev_trivial->apply_to(EventStore::Tiny::State->new);
-        is $st->get('answer') => 42, 'Correct result from event return value';
+        my $st = $ev_trivial->apply_to({});
+        is $st->{answer} => 42, 'Correct result from event return value';
     };
 
     subtest 'By side effect' => sub {
@@ -70,18 +68,18 @@ subtest 'Application' => sub {
             name            => 'bar',
             transformation  => sub {
                 my $state = shift;
-                $state->set(quux => $state->get('quux') + 25);
+                $state->{quux} += 25;
                 return 666; # return value makes no sense
             },
         );
 
         # prepare state for side effect application
-        my $state = EventStore::Tiny::State->new;
-        $state->set(quux => 17);
+        my $state = {};
+        $state->{quux} = 17;
 
         # apply
         my $ret_st = $ev->apply_to($state);
-        is $state->get('quux') => 42, 'Correct modified state';
+        is $state->{quux} => 42, 'Correct modified state';
     };
 
     subtest 'Conflicting application' => sub {
@@ -91,16 +89,15 @@ subtest 'Application' => sub {
             name            => 'baz',
             transformation  => sub {
                 my $state = shift;
-                $state->set(x => 17);
-                return EventStore::Tiny::State->new(init => {x => 42});
+                $state->{x} = 17;
+                return {x => 42};
             },
         );
 
         # prepare state to remember
-        my $st      = EventStore::Tiny::State->new;
+        my $st      = {};
         my $ret_st  = $ev->apply_to($st);
-        is $ret_st->get('x') => 42,
-            'Return is more important than side-effect';
+        is $ret_st->{x} => 42, 'Return is more important than side-effect';
     };
 };
 
@@ -111,15 +108,13 @@ subtest 'Data event' => sub {
         name            => 'foo',
         transformation  => sub {
             my ($state, $data) = @_;
-            $state->set($data->{key} => 42);
+            $state->{$data->{key}} = 42;
         },
         data            => {key => 'quux'},
     );
 
     # apply to empty state
-    my $state = EventStore::Tiny::State->new;
-    $ev->apply_to($state);
-    is $state->get('quux') => 42, 'Correct state-update from data';
+    is $ev->apply_to({})->{quux} => 42, 'Correct state-update from data';
 };
 
 subtest 'Specialization' => sub {
@@ -129,7 +124,7 @@ subtest 'Specialization' => sub {
         name            => 'foo',
         transformation  => sub {
             my ($state, $data) = @_;
-            $state->set($data->{key} => 42);
+            $state->{$data->{key}} = 42;
         },
     );
 
@@ -140,9 +135,7 @@ subtest 'Specialization' => sub {
     isa_ok $de => 'EventStore::Tiny::DataEvent';
 
     # apply to empty state
-    my $state = EventStore::Tiny::State->new;
-    $de->apply_to($state);
-    is $state->get('quux') => 42, 'Correct state-update from new data';
+    is $de->apply_to({})->{quux} => 42, 'Correct state-update from new data';
 };
 
 done_testing;

@@ -4,7 +4,6 @@ use warnings;
 use Test::More;
 
 use List::Util qw(sum);
-use EventStore::Tiny::State;
 use EventStore::Tiny::Event;
 
 use_ok 'EventStore::Tiny::EventStream';
@@ -16,7 +15,7 @@ sub _test_events {
     return [map {
         my $add = $_;
         EventStore::Tiny::Event->new(name => 't', transformation => sub {
-            $_[0]->set('key', ($_[0]->get('key') // 0) + $add);
+            $_[0]->{key} += $add;
         })
     } @test_numbers];
 }
@@ -32,9 +31,8 @@ subtest 'Events at construction time' => sub {
 
     # test event list members by applying
     for my $i (0 .. $#test_numbers) {
-        my $s = EventStore::Tiny::State->new;
-        is $es->events->[$i]->apply_to($s)->get('key')
-            => $test_numbers[$i], "Correct transformation: $test_numbers[$i]";
+        is $es->events->[$i]->apply_to({})->{key} => $test_numbers[$i],
+            "Correct transformation: $test_numbers[$i]";
     }
 
     # check limit timestamps
@@ -56,9 +54,8 @@ subtest 'Appending events' => sub {
 
     # test event list members by applying
     for my $i (0 .. $#test_numbers) {
-        my $s = EventStore::Tiny::State->new;
-        is $es->events->[$i]->apply_to($s)->get('key')
-            => $test_numbers[$i], "Correct transformation: $test_numbers[$i]";
+        is $es->events->[$i]->apply_to({})->{key} => $test_numbers[$i],
+            "Correct transformation: $test_numbers[$i]";
     }
 };
 
@@ -71,17 +68,16 @@ subtest 'Application' => sub {
 
         # prepare a test state to be modified
         my $init_foo    = 666;
-        my $state       = EventStore::Tiny::State->new;
-        $state->set(key => $init_foo);
+        my $state       = {key => $init_foo};
 
         # apply all events and check result
         $es->apply_to($state);
-        is $state->get('key') => sum($init_foo, @test_numbers),
+        is $state->{key} => sum($init_foo, @test_numbers),
             'Correct chained application of all events';
     };
 
     subtest 'No state given' => sub {
-        is $es->apply_to->get('key') => sum(@test_numbers),
+        is $es->apply_to->{key} => sum(@test_numbers),
             'Correct chained application of all events';
     };
 };
@@ -95,7 +91,7 @@ subtest 'Extract substream' => sub {
         my $default = $es->substream;
         isa_ok $default => 'EventStore::Tiny::EventStream';
         is $default->length => $es->length, 'Same event count';
-        is $default->apply_to->get('key') => $es->apply_to->get('key'),
+        is $default->apply_to->{key} => $es->apply_to->{key},
             'Correct chained application of the default events';
     };
 
@@ -112,15 +108,14 @@ subtest 'Extract substream' => sub {
         is $first->length => 1, 'Only one event left';
 
         # check if it's the first
-        is $first->apply_to->get('key') => $test_numbers[0],
-            'Got the first event';
+        is $first->apply_to->{key} => $test_numbers[0], 'Got the first event';
     };
 
     subtest 'All' => sub {
         my $all = $es->substream(sub {1});
         isa_ok $all => 'EventStore::Tiny::EventStream';
         is $all->length => $es->length, 'Same event count';
-        is $all->apply_to->get('key') => $es->apply_to->get('key'),
+        is $all->apply_to->{key} => $es->apply_to->{key},
             'Correct chained application of all events';
     };
 };
@@ -136,7 +131,7 @@ subtest 'Time substreams' => sub {
         my $es_first = $es->until($sep_ts);
         isa_ok $es_first => 'EventStore::Tiny::EventStream';
         is $es_first->length => 1, 'Correct substream length';
-        is $es_first->apply_to->get('key') => $test_numbers[0],
+        is $es_first->apply_to->{key} => $test_numbers[0],
             'Correct event';
     };
 
@@ -144,7 +139,7 @@ subtest 'Time substreams' => sub {
         my $es_rest = $es->after($sep_ts);
         isa_ok $es_rest => 'EventStore::Tiny::EventStream';
         is $es_rest->length => 2, 'Correct substream length';
-        is $es_rest->apply_to->get('key') => sum(@test_numbers[1,2]),
+        is $es_rest->apply_to->{key} => sum(@test_numbers[1,2]),
             'Correct events';
     };
 };

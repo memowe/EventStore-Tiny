@@ -28,8 +28,8 @@ sub last_timestamp {
 sub apply_to {
     my ($self, $state) = @_;
 
-    # start with empty state object by default
-    $state = EventStore::Tiny::State->new unless defined $state;
+    # start with empty state by default
+    $state = {} unless defined $state;
 
     # apply all events
     $state = $_->apply_to($state) for @{$self->events};

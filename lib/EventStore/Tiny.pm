@@ -47,8 +47,8 @@ sub store_event {
 sub init_state {
     my $self = shift;
 
-    # build new state from cloned init data
-    return EventStore::Tiny::State->new(init => clone($self->init_data));
+    # clone init data
+    return clone($self->init_data);
 }
 
 sub snapshot {

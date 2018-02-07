@@ -24,7 +24,7 @@ sub apply_to {
 
     # check if application by side-effect or return value
     my $ret_val = $self->transformation->($state, $self->data);
-    return $ret_val if $ret_val->isa('EventStore::Tiny::State');
+    return $ret_val if ref($ret_val) eq 'HASH';
 
     # returned something else: return original (modified) state
     return $state;
