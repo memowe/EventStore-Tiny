@@ -1,5 +1,5 @@
-EventSourcing::Tiny
-===================
+EventStore::Tiny
+================
 
 A minimal event sourcing framework.
 

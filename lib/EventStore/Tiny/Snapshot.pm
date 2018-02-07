@@ -1,4 +1,4 @@
-package EventSourcing::Tiny::Snapshot;
+package EventStore::Tiny::Snapshot;
 use Mo qw(default required );
 
 has state       => (required => 1);

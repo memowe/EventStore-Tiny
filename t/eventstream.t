@@ -4,10 +4,10 @@ use warnings;
 use Test::More;
 
 use List::Util qw(sum);
-use EventSourcing::Tiny::State;
-use EventSourcing::Tiny::Event;
+use EventStore::Tiny::State;
+use EventStore::Tiny::Event;
 
-use_ok 'EventSourcing::Tiny::EventStream';
+use_ok 'EventStore::Tiny::EventStream';
 
 my @test_numbers = (17, 25, 42);
 
@@ -15,7 +15,7 @@ my @test_numbers = (17, 25, 42);
 sub _test_events {
     return [map {
         my $add = $_;
-        EventSourcing::Tiny::Event->new(name => 't', transformation => sub {
+        EventStore::Tiny::Event->new(name => 't', transformation => sub {
             $_[0]->set('key', ($_[0]->get('key') // 0) + $add);
         })
     } @test_numbers];
@@ -27,12 +27,12 @@ subtest 'Events at construction time' => sub {
     my $tes = _test_events;
 
     # construct event stream with an array of events
-    my $es = EventSourcing::Tiny::EventStream->new(events => $tes);
+    my $es = EventStore::Tiny::EventStream->new(events => $tes);
     is $es->length => scalar(@test_numbers), 'Right event count';
 
     # test event list members by applying
     for my $i (0 .. $#test_numbers) {
-        my $s = EventSourcing::Tiny::State->new;
+        my $s = EventStore::Tiny::State->new;
         is $es->events->[$i]->apply_to($s)->get('key')
             => $test_numbers[$i], "Correct transformation: $test_numbers[$i]";
     }
@@ -47,7 +47,7 @@ subtest 'Events at construction time' => sub {
 subtest 'Appending events' => sub {
 
     # construct an empty event stream
-    my $es = EventSourcing::Tiny::EventStream->new;
+    my $es = EventStore::Tiny::EventStream->new;
     is $es->length => 0, 'Right event count';
 
     # add events
@@ -56,7 +56,7 @@ subtest 'Appending events' => sub {
 
     # test event list members by applying
     for my $i (0 .. $#test_numbers) {
-        my $s = EventSourcing::Tiny::State->new;
+        my $s = EventStore::Tiny::State->new;
         is $es->events->[$i]->apply_to($s)->get('key')
             => $test_numbers[$i], "Correct transformation: $test_numbers[$i]";
     }
@@ -65,13 +65,13 @@ subtest 'Appending events' => sub {
 subtest 'Application' => sub {
 
     # construct event stream with an array of events
-    my $es = EventSourcing::Tiny::EventStream->new(events => _test_events);
+    my $es = EventStore::Tiny::EventStream->new(events => _test_events);
 
     subtest 'State given' => sub {
 
         # prepare a test state to be modified
         my $init_foo    = 666;
-        my $state       = EventSourcing::Tiny::State->new;
+        my $state       = EventStore::Tiny::State->new;
         $state->set(key => $init_foo);
 
         # apply all events and check result
@@ -89,11 +89,11 @@ subtest 'Application' => sub {
 subtest 'Extract substream' => sub {
 
     # construct event stream with an array of events
-    my $es = EventSourcing::Tiny::EventStream->new(events => _test_events);
+    my $es = EventStore::Tiny::EventStream->new(events => _test_events);
 
     subtest 'Default' => sub {
         my $default = $es->substream;
-        isa_ok $default => 'EventSourcing::Tiny::EventStream';
+        isa_ok $default => 'EventStore::Tiny::EventStream';
         is $default->length => $es->length, 'Same event count';
         is $default->apply_to->get('key') => $es->apply_to->get('key'),
             'Correct chained application of the default events';
@@ -101,14 +101,14 @@ subtest 'Extract substream' => sub {
 
     subtest 'Empty' => sub {
         my $empty = $es->substream(sub {return});
-        isa_ok $empty => 'EventSourcing::Tiny::EventStream';
+        isa_ok $empty => 'EventStore::Tiny::EventStream';
         is $empty->length => 0, 'No events left';
     };
 
     subtest 'First' => sub {
         my $count = 0;
         my $first = $es->substream(sub {$count++ == 0});
-        isa_ok $first => 'EventSourcing::Tiny::EventStream';
+        isa_ok $first => 'EventStore::Tiny::EventStream';
         is $first->length => 1, 'Only one event left';
 
         # check if it's the first
@@ -118,7 +118,7 @@ subtest 'Extract substream' => sub {
 
     subtest 'All' => sub {
         my $all = $es->substream(sub {1});
-        isa_ok $all => 'EventSourcing::Tiny::EventStream';
+        isa_ok $all => 'EventStore::Tiny::EventStream';
         is $all->length => $es->length, 'Same event count';
         is $all->apply_to->get('key') => $es->apply_to->get('key'),
             'Correct chained application of all events';
@@ -130,11 +130,11 @@ subtest 'Time substreams' => sub {
     # prepare events
     my $events  = _test_events;
     my $sep_ts  = $events->[0]->timestamp;
-    my $es      = EventSourcing::Tiny::EventStream->new(events => $events);
+    my $es      = EventStore::Tiny::EventStream->new(events => $events);
 
     subtest 'Events until' => sub {
         my $es_first = $es->until($sep_ts);
-        isa_ok $es_first => 'EventSourcing::Tiny::EventStream';
+        isa_ok $es_first => 'EventStore::Tiny::EventStream';
         is $es_first->length => 1, 'Correct substream length';
         is $es_first->apply_to->get('key') => $test_numbers[0],
             'Correct event';
@@ -142,7 +142,7 @@ subtest 'Time substreams' => sub {
 
     subtest 'Events after' => sub {
         my $es_rest = $es->after($sep_ts);
-        isa_ok $es_rest => 'EventSourcing::Tiny::EventStream';
+        isa_ok $es_rest => 'EventStore::Tiny::EventStream';
         is $es_rest->length => 2, 'Correct substream length';
         is $es_rest->apply_to->get('key') => sum(@test_numbers[1,2]),
             'Correct events';

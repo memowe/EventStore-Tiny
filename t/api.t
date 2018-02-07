@@ -3,14 +3,14 @@ use warnings;
 
 use Test::More;
 
-use EventSourcing::Tiny::State;
+use EventStore::Tiny::State;
 
-use_ok 'EventSourcing::Tiny';
+use_ok 'EventStore::Tiny';
 
 subtest 'Registration' => sub {
 
     # no events registered at the beginning
-    my $est = EventSourcing::Tiny->new;
+    my $est = EventStore::Tiny->new;
     is_deeply $est->event_names => [], 'No events stored at the beginning';
 
     # register a simple event
@@ -24,7 +24,7 @@ subtest 'Registration' => sub {
 subtest 'Storing an event' => sub {
 
     # prepare
-    my $est = EventSourcing::Tiny->new;
+    my $est = EventStore::Tiny->new;
     $est->register_event(AnswerGiven => sub {
         my ($state, $data) = @_;
         $state->set(answer => $data->{answer});
@@ -50,7 +50,7 @@ subtest 'Storing an event' => sub {
 subtest 'Snapshot' => sub {
 
     # register test events
-    my $est = EventSourcing::Tiny->new;
+    my $est = EventStore::Tiny->new;
     $est->register_event(TestEvent => sub {
         my ($state, $data) = @_;
         $state->set(foo => ($state->get('foo') // 0) + $data->{foo});
@@ -61,19 +61,19 @@ subtest 'Snapshot' => sub {
 
     subtest 'Unspecified snapshot' => sub {
         my $sn = $est->snapshot;
-        isa_ok $sn => 'EventSourcing::Tiny::Snapshot';
+        isa_ok $sn => 'EventStore::Tiny::Snapshot';
         is $sn->timestamp => $est->events->last_timestamp,
             'Correct snapshot timestamp';
-        isa_ok $sn->state => 'EventSourcing::Tiny::State';
+        isa_ok $sn->state => 'EventStore::Tiny::State';
         is $sn->state->get('foo') => 84, 'Correct snapshot';
     };
 
     subtest 'Specified timestamp snapshot' => sub {
         my $sep_ts = $est->events->events->[1]->timestamp;
         my $sn = $est->snapshot($sep_ts);
-        isa_ok $sn => 'EventSourcing::Tiny::Snapshot';
+        isa_ok $sn => 'EventStore::Tiny::Snapshot';
         is $sn->timestamp => $sep_ts, 'Correct snapshot timestamp';
-        isa_ok $sn->state => 'EventSourcing::Tiny::State';
+        isa_ok $sn->state => 'EventStore::Tiny::State';
         is $sn->state->get('foo') => 42, 'Correct snapshot';
     };
 };

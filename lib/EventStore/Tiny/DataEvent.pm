@@ -1,6 +1,6 @@
-package EventSourcing::Tiny::DataEvent;
+package EventStore::Tiny::DataEvent;
 use Mo qw(default);
-extends 'EventSourcing::Tiny::Event';
+extends 'EventStore::Tiny::Event';
 
 has data => {};
 
@@ -8,7 +8,7 @@ sub new_from_template {
     my ($class, $event, $data) = @_;
 
     # "clone"
-    return EventSourcing::Tiny::DataEvent->new(
+    return EventStore::Tiny::DataEvent->new(
         name            => $event->name,
         transformation  => $event->transformation,
         data            => $data,

@@ -1,4 +1,4 @@
-package EventSourcing::Tiny::EventStream;
+package EventStore::Tiny::EventStream;
 use Mo 'default';
 
 has events => [];
@@ -29,7 +29,7 @@ sub apply_to {
     my ($self, $state) = @_;
 
     # start with empty state object by default
-    $state = EventSourcing::Tiny::State->new unless defined $state;
+    $state = EventStore::Tiny::State->new unless defined $state;
 
     # apply all events
     $state = $_->apply_to($state) for @{$self->events};
@@ -48,7 +48,7 @@ sub substream {
     my @filtered = grep {$selector->($_)} @{$self->events};
 
     # build new sub stream
-    return EventSourcing::Tiny::EventStream->new(events => \@filtered);
+    return EventStore::Tiny::EventStream->new(events => \@filtered);
 }
 
 sub until {

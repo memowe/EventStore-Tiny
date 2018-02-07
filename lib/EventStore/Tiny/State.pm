@@ -1,4 +1,4 @@
-package EventSourcing::Tiny::State;
+package EventStore::Tiny::State;
 use Mo qw(default build);
 
 has init    => {};

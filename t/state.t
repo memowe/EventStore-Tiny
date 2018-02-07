@@ -3,22 +3,22 @@ use warnings;
 
 use Test::More;
 
-use_ok 'EventSourcing::Tiny::State';
+use_ok 'EventStore::Tiny::State';
 
 subtest 'Simple constructor' => sub {
-    my $state = EventSourcing::Tiny::State->new();
+    my $state = EventStore::Tiny::State->new();
     is_deeply [$state->list] => [], 'State has no fields';
 };
 
 subtest 'Initialization' => sub {
-    my $state = EventSourcing::Tiny::State->new(init => {answer => 42});
+    my $state = EventStore::Tiny::State->new(init => {answer => 42});
     is_deeply [$state->list] => ['answer'], 'State has the answer field only';
 };
 
 subtest 'Access' => sub {
 
     # init
-    my $state = EventSourcing::Tiny::State->new(init => {answer => 42});
+    my $state = EventStore::Tiny::State->new(init => {answer => 42});
     is $state->get('answer') => 42, 'Correct answer field value';
 
     # modification
