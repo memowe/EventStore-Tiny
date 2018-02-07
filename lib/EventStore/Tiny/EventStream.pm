@@ -17,11 +17,13 @@ sub length {
 
 sub first_timestamp {
     my $self = shift;
+    return unless @{$self->events};
     return $self->events->[0]->timestamp;
 }
 
 sub last_timestamp {
     my $self = shift;
+    return unless @{$self->events};
     return $self->events->[$self->length - 1]->timestamp;
 }
 

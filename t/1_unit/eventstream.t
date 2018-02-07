@@ -34,6 +34,18 @@ subtest 'Events at construction time' => sub {
         is $es->events->[$i]->apply_to({})->{key} => $test_numbers[$i],
             "Correct transformation: $test_numbers[$i]";
     }
+};
+
+subtest 'Timestamp limits' => sub {
+
+    # prepare empty stream
+    my $es = EventStore::Tiny::EventStream->new;
+    is $es->first_timestamp => undef, 'First timestamp undefined';
+    is $es->last_timestamp => undef, 'Last timestamp undefined';
+
+    # add events
+    my $tes = _test_events;
+    $es->events($tes);
 
     # check limit timestamps
     is $es->first_timestamp => $tes->[0]->timestamp,
