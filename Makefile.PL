@@ -23,5 +23,5 @@ WriteMakefile(
         'Mo'            => '0.38',
         'UUID::Tiny'    => '1.04',
     },
-    test                => {TESTS => 't/*.t'}
+    test                => {TESTS => 't/*.t t/*/*.t'}
 );
