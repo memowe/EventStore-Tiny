@@ -28,17 +28,14 @@ sub _register_events {
             id      => $data->{user_id},
             name    => $data->{user_name},
         };
-        return $state;
     });
     $self->_register_event(UserRenamed => sub {
         my ($state, $data) = @_;
         $state->{users}{$data->{user_id}}{name} = $data->{user_name};
-        return $state;
     });
     $self->_event_store->register_event(UserRemoved => sub {
         my ($state, $data) = @_;
         delete $state->{users}{$data->{user_id}};
-        return $state;
     });
 
     # tamagotchi events
@@ -55,18 +52,15 @@ sub _register_events {
         my $tama = $state->{tamas}{$data->{tama_id}};
         $tama->{health} += 20;
         $tama->{health} = 100 if $tama->{health} > 100;
-        return $state;
     });
     $self->_register_event(TamagotchiDayPassed => sub {
         my ($state, $data) = @_;
         my $tama = $state->{tamas}{$data->{tama_id}};
         $tama->{health} -= 30;
-        return $state;
     });
     $self->_register_event(TamagotchiDied => sub {
         my ($state, $data) = @_;
         delete $state->{tamas}{$data->{tama_id}};
-        return $state;
     });
 }
 
