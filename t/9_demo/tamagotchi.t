@@ -10,12 +10,14 @@ use_ok 'Tamagotchi';
 
 my $tama_sto = Tamagotchi->new;
 isa_ok $tama_sto => 'Tamagotchi';
+my $user;
 
 subtest 'User handling' => sub {
 
     # create
     my $anne    = $tama_sto->add_user('Anne');
     my $bob     = $tama_sto->add_user('Bob');
+    $user = $bob;
 
     subtest 'Creation' => sub {
 
@@ -111,8 +113,35 @@ subtest 'User handling' => sub {
 
 subtest 'Tamagotchi' => sub {
 
+    my $tama = $tama_sto->add_tamagotchi($user);
+
     subtest 'Creation' => sub {
-        ok 1 => 'Dummy test'; # TODO
+
+        # check id from construction
+        is $tama => 0, 'Correct first tamagotchi ID';
+
+        subtest 'Events' => sub {
+            is $tama_sto->_event_store->events->length => 5,
+                '5 events recorded';
+
+            my $add_tama = $tama_sto->_event_store->events->events->[4];
+            isa_ok $add_tama => 'EventStore::Tiny::DataEvent';
+            is $add_tama->name => 'TamagotchiAdded', 'Correct event type';
+            is_deeply $add_tama->data => {
+                user_id => $user,
+                tama_id => 0,
+            }, 'Correct event data';
+        };
+
+        # check state after creation
+        is_deeply $tama_sto->data => {
+            users => {$user => {id => $user, name => 'Bill'}},
+            tamas => {$tama => {
+                id      => $tama,
+                health  => 100,
+                user_id => $user,
+            }},
+        }, 'Correct state after tamagotchi creation';
     };
 
     subtest 'Life' => sub {
