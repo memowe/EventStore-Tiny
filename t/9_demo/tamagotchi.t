@@ -67,6 +67,7 @@ subtest 'User handling' => sub {
             is $tama_sto->_event_store->events->length => 3,
                 'Three events recorded';
 
+            # check event data
             my $rename = $tama_sto->_event_store->events->events->[2];
             isa_ok $rename => 'EventStore::Tiny::DataEvent';
             is $rename->name => 'UserRenamed', 'Correct event type';
@@ -94,6 +95,7 @@ subtest 'User handling' => sub {
             is $tama_sto->_event_store->events->length => 4,
                 'Four events recorded';
 
+            # check event data
             my $removal = $tama_sto->_event_store->events->events->[3];
             isa_ok $removal => 'EventStore::Tiny::DataEvent';
             is $removal->name => 'UserRemoved', 'Correct event type';
@@ -124,6 +126,7 @@ subtest 'Tamagotchi' => sub {
             is $tama_sto->_event_store->events->length => 5,
                 '5 events recorded';
 
+            # check event data
             my $add_tama = $tama_sto->_event_store->events->events->[4];
             isa_ok $add_tama => 'EventStore::Tiny::DataEvent';
             is $add_tama->name => 'TamagotchiAdded', 'Correct event type';
@@ -155,6 +158,7 @@ subtest 'Tamagotchi' => sub {
             is $tama_sto->_event_store->events->length => 8,
                 '8 events recorded';
 
+            # check event data
             my ($feed1, $age, $feed2) = @{$tama_sto->_event_store
                 ->events->events}[5, 6, 7];
             isa_ok $_ => 'EventStore::Tiny::DataEvent'
@@ -178,16 +182,21 @@ subtest 'Tamagotchi' => sub {
         }, 'Correct state after tamagotchi daily routine';
     };
 
+    # murder
     $tama_sto->die_tamagotchi($tama);
 
     subtest 'Death' => sub {
-        is $tama_sto->_event_store->events->length => 9,
-            '9 events recorded';
 
-        my $murder = $tama_sto->_event_store->events->events->[8];
-        isa_ok $murder => 'EventStore::Tiny::DataEvent';
-        is $murder->name => 'TamagotchiDied', 'Correct event type';
-        is_deeply $murder->data => {tama_id => $tama}, 'Correct event data';
+        subtest 'Events' => sub {
+            is $tama_sto->_event_store->events->length => 9,
+                '9 events recorded';
+
+            # check event data
+            my $murder = $tama_sto->_event_store->events->events->[8];
+            isa_ok $murder => 'EventStore::Tiny::DataEvent';
+            is $murder->name => 'TamagotchiDied', 'Correct event type';
+            is_deeply $murder->data => {tama_id => $tama}, 'Correct event data';
+        };
 
         # check state after murder
         is_deeply $tama_sto->data => {
