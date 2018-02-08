@@ -92,7 +92,7 @@ sub rename_user {
 
     # try to find user
     die "Unknown user: $user_id\n"
-        unless exists $self->get('users')->{$user_id};
+        unless exists $self->data->{users}{$user_id};
 
     # ok, store rename event
     $self->_store_event(UserRenamed => {
@@ -106,7 +106,7 @@ sub remove_user {
 
     # try to find user
     die "Unknown user: $user_id\n"
-        unless exists $self->get('users')->{$user_id};
+        unless exists $self->data->{users}{$user_id};
 
     # ok, store removal event
     $self->_store_event(UserRemoved => {user_id => $user_id});
@@ -117,11 +117,11 @@ sub add_tamagotchi {
 
     # try to find user
     die "Unknown user: $user_id\n"
-        unless exists $self->get('users')->{$user_id};
+        unless exists $self->data->{users}{$user_id};
 
     # find free tamagotchi id
     my $tama_id = 0;
-    $tama_id++ while exists $self->get('tamas')->{$tama_id};
+    $tama_id++ while exists $self->data->{tamas}{$tama_id};
 
     # ok, store event
     $self->_store_event(TamagotchiAdded => {
@@ -138,7 +138,7 @@ sub feed_tamagotchi {
 
     # try to find tamagotchi
     die "Unknown tamagotchi: $tama_id\n"
-        unless exists $self->get('tamas')->{$tama_id};
+        unless exists $self->data->{tamas}{$tama_id};
 
     # ok, feed it
     $self->_store_event(TamagotchiFed => {tama_id => $tama_id});
@@ -149,7 +149,7 @@ sub age_tamagotchi {
 
     # try to find tamagotchi
     die "Unknown tamagotchi: $tama_id\n"
-        unless exists $self->get('tamas')->{$tama_id};
+        unless exists $self->data->{tamas}{$tama_id};
 
     # ok, feed it
     $self->_store_event(TamagotchiDayPassed => {
@@ -162,7 +162,7 @@ sub die_tamagotchi {
 
     # try to find tamagotchi
     die "Unknown tamagotchi: $tama_id\n"
-        unless exists $self->snapshot->get('tamas')->{$tama_id};
+        unless exists $self->data->{tamas}{$tama_id};
 
     # ok, murder it
     $self->_store_event(TamagotchiDied => {tama_id => $tama_id});
