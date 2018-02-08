@@ -178,8 +178,22 @@ subtest 'Tamagotchi' => sub {
         }, 'Correct state after tamagotchi daily routine';
     };
 
+    $tama_sto->die_tamagotchi($tama);
+
     subtest 'Death' => sub {
-        ok 1 => 'Dummy test'; # TODO
+        is $tama_sto->_event_store->events->length => 9,
+            '9 events recorded';
+
+        my $murder = $tama_sto->_event_store->events->events->[8];
+        isa_ok $murder => 'EventStore::Tiny::DataEvent';
+        is $murder->name => 'TamagotchiDied', 'Correct event type';
+        is_deeply $murder->data => {tama_id => $tama}, 'Correct event data';
+
+        # check state after murder
+        is_deeply $tama_sto->data => {
+            users => {$user => {id => $user, name => 'Bill'}},
+            tamas => {},
+        }, 'Correct state after tamagotchi daily routine';
     };
 };
 
