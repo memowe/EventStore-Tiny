@@ -144,8 +144,38 @@ subtest 'Tamagotchi' => sub {
         }, 'Correct state after tamagotchi creation';
     };
 
+    # feed (+0), age (-30), feed (+20)
+    $tama_sto->feed_tamagotchi($tama);
+    $tama_sto->age_tamagotchi($tama);
+    $tama_sto->feed_tamagotchi($tama);
+
     subtest 'Life' => sub {
-        ok 1 => 'Dummy test'; # TODO
+
+        subtest 'Events' => sub {
+            is $tama_sto->_event_store->events->length => 8,
+                '8 events recorded';
+
+            my ($feed1, $age, $feed2) = @{$tama_sto->_event_store
+                ->events->events}[5, 6, 7];
+            isa_ok $_ => 'EventStore::Tiny::DataEvent'
+                for $feed1, $age, $feed2;
+            is_deeply $_->data => {tama_id => $tama}, 'Correct event data'
+                for $feed1, $age, $feed2;
+
+            is $feed1->name => 'TamagotchiFed', 'Correct event type';
+            is $age->name => 'TamagotchiDayPassed', 'Correct event type';
+            is $feed2->name => 'TamagotchiFed', 'Correct event type';
+        };
+
+        # check state after daily routine
+        is_deeply $tama_sto->data => {
+            users => {$user => {id => $user, name => 'Bill'}},
+            tamas => {$tama => {
+                id      => $tama,
+                health  => 90,
+                user_id => $user,
+            }},
+        }, 'Correct state after tamagotchi daily routine';
     };
 
     subtest 'Death' => sub {
