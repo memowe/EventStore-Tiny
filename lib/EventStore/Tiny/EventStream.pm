@@ -34,7 +34,7 @@ sub apply_to {
     $state = {} unless defined $state;
 
     # apply all events
-    $state = $_->apply_to($state) for @{$self->events};
+    $_->apply_to($state) for @{$self->events};
 
     # done
     return $state;

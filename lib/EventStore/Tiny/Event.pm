@@ -18,15 +18,15 @@ sub BUILD {
     $self->timestamp(time);
 }
 
-# lets transformation work on state and returns the result
+# lets transformation work on state by side-effect
+# AND IGNORES THE RETURN VALUE
 sub apply_to {
     my ($self, $state) = @_;
 
-    # check if application by side-effect or return value
-    my $ret_val = $self->transformation->($state, $self->data);
-    return $ret_val if ref($ret_val) eq 'HASH';
+    # apply the transformation by side effect
+    $self->transformation->($state, $self->data);
 
-    # returned something else: return original (modified) state
+    # returned the same state just in case
     return $state;
 }
 

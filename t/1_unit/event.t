@@ -46,59 +46,24 @@ subtest 'Construction arguments' => sub {
 
 subtest 'Application' => sub {
 
-    subtest 'By return value' => sub {
+    # create event
+    my $ev = EventStore::Tiny::Event->new(
+        name            => 'bar',
+        transformation  => sub {
+            my $state = shift;
+            $state->{quux} += 25;
+            return 666; # return value makes no sense
+        },
+    );
 
-        # event with return value application
-        my $ev_trivial = EventStore::Tiny::Event->new(
-            name            => 'foo',
-            transformation  => sub {
-                my $state = shift;
-                $state->{answer} = 42;
-                return $state;
-            },
-        );
-        my $st = $ev_trivial->apply_to({});
-        is $st->{answer} => 42, 'Correct result from event return value';
-    };
+    # prepare state for application
+    my $state = {};
+    $state->{quux} = 17;
 
-    subtest 'By side effect' => sub {
-
-        # create side-effect event
-        my $ev = EventStore::Tiny::Event->new(
-            name            => 'bar',
-            transformation  => sub {
-                my $state = shift;
-                $state->{quux} += 25;
-                return 666; # return value makes no sense
-            },
-        );
-
-        # prepare state for side effect application
-        my $state = {};
-        $state->{quux} = 17;
-
-        # apply
-        my $ret_st = $ev->apply_to($state);
-        is $state->{quux} => 42, 'Correct modified state';
-    };
-
-    subtest 'Conflicting application' => sub {
-
-        # create event with different side-effect and return applications
-        my $ev = EventStore::Tiny::Event->new(
-            name            => 'baz',
-            transformation  => sub {
-                my $state = shift;
-                $state->{x} = 17;
-                return {x => 42};
-            },
-        );
-
-        # prepare state to remember
-        my $st      = {};
-        my $ret_st  = $ev->apply_to($st);
-        is $ret_st->{x} => 42, 'Return is more important than side-effect';
-    };
+    # apply
+    my $ret_val = $ev->apply_to($state);
+    is $state->{quux} => 42, 'Correct modified state';
+    is $ret_val => $state, 'Return state is the same as given state';
 };
 
 subtest 'Data event' => sub {
