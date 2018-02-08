@@ -109,4 +109,19 @@ subtest 'User handling' => sub {
     };
 };
 
+subtest 'Tamagotchi' => sub {
+
+    subtest 'Creation' => sub {
+        ok 1 => 'Dummy test'; # TODO
+    };
+
+    subtest 'Life' => sub {
+        ok 1 => 'Dummy test'; # TODO
+    };
+
+    subtest 'Death' => sub {
+        ok 1 => 'Dummy test'; # TODO
+    };
+};
+
 done_testing;
