@@ -19,7 +19,6 @@ sub BUILD {
 }
 
 # lets transformation work on state by side-effect
-# AND IGNORES THE RETURN VALUE
 sub apply_to {
     my ($self, $state) = @_;
 
