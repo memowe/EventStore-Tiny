@@ -1,5 +1,4 @@
-EventStore::Tiny
-================
+# EventStore::Tiny [![Build Status](https://travis-ci.org/memowe/EventStore-Tiny.svg?branch=master)](https://travis-ci.org/memowe/EventStore-Tiny)
 
 A minimal event sourcing framework.
 
