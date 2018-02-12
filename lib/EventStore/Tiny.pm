@@ -1,6 +1,7 @@
 package EventStore::Tiny;
 use Mo qw(default);
 
+use EventStore::Tiny::Logger;
 use EventStore::Tiny::Event;
 use EventStore::Tiny::DataEvent;
 use EventStore::Tiny::EventStream;
@@ -11,8 +12,10 @@ use Clone qw(clone);
 our $VERSION = '0.01';
 
 has registry    => {};
-has events      => sub {EventStore::Tiny::EventStream->new};
+has events      => sub {EventStore::Tiny::EventStream->new(
+                        logger => shift->logger)};
 has init_data   => {};
+has logger      => sub {EventStore::Tiny::Logger->log_cb};
 
 sub register_event {
     my ($self, $name, $transformation) = @_;
@@ -20,6 +23,7 @@ sub register_event {
     $self->registry->{$name} = EventStore::Tiny::Event->new(
         name            => $name,
         transformation  => $transformation,
+        logger          => $self->logger,
     );
 }
 
