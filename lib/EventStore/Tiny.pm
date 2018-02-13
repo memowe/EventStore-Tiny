@@ -8,6 +8,11 @@ use EventStore::Tiny::EventStream;
 use EventStore::Tiny::Snapshot;
 
 use Clone qw(clone);
+use Storable;
+
+# enable handling of CODE refs (as event actions are code refs)
+$Storable::Deparse  = 1;
+$Storable::Eval     = 1;
 
 our $VERSION = '0.01';
 
@@ -16,6 +21,18 @@ has events      => sub {EventStore::Tiny::EventStream->new(
                         logger => shift->logger)};
 has init_data   => {};
 has logger      => sub {EventStore::Tiny::Logger->log_cb};
+
+# class method to construct
+sub new_from_file {
+    my (undef, $fn) = @_;
+    return retrieve($fn);
+}
+
+{no warnings 'redefine';
+sub store {
+    my ($self, $fn) = @_;
+    Storable::store($self, $fn);
+}}
 
 sub register_event {
     my ($self, $name, $transformation) = @_;

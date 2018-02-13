@@ -42,7 +42,7 @@ See [Tamagotchi.pm][tpm] and [tamagotchi.t][tt] for a non-trivial demo.
 
 - Flexible snapshots (high-resolution timestamps) and event substreams
 - Customizable event logging
-- *TODO* Simple storage solution for events in the file system
+- Simple storage solution for events in the file system
 - *TODO* Transparent snapshot caching mechanism to improve performance
 
 ## Author and license
