@@ -1,9 +1,7 @@
 package EventStore::Tiny::Logger;
 use Mo qw(default);
 
-use IO::Handle;
-
-has print_to => IO::Handle->new->fdopen(fileno(STDOUT),'w');
+has print_target => sub {select}; # selected output file handle
 
 sub log {
     my ($self, $event) = @_;
@@ -13,7 +11,7 @@ sub log {
     my $output = $event->name . ': ' . dump $event->data;
 
     # print to given print handle
-    $self->print_to->print("$output\n");
+    $self->print_target->print("$output\n");
 }
 
 sub log_cb {
