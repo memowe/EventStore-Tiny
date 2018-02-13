@@ -102,4 +102,24 @@ subtest 'Default logger' => sub {
     };
 };
 
+subtest 'Integration' => sub {
+
+    my $es = EventStore::Tiny->new(
+        logger => EventStore::Tiny::Logger->log_cb(
+            print_target => $print_target
+        ),
+    );
+
+    # log and apply a dummy event
+    $es->register_event(TestEventStored => sub {});
+    $es->store_event(TestEventStored => {x => 'y', p => 'q'});
+    $es->snapshot;
+
+    # test
+    is $print_target->length => 4, 'Correct event history size';
+    my $log_str = $print_target->history->[3];
+    is $log_str => "TestEventStored: { p => \"q\", x => \"y\" }\n",
+        'Correct event string representation logged';
+};
+
 done_testing;
