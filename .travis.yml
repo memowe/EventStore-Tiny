@@ -1,7 +1,7 @@
 language: perl
 perl:
     - "5.26"
-    - "5.12"
+    - "5.14"
 notifications:
     recipients:
         - mirko@westermeier.de
