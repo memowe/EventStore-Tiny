@@ -17,7 +17,7 @@ WriteMakefile(
             repository  => 'http://github.com/memowe/EventStore-Tiny',
         },
     },
-    MIN_PERL_VERSION    => '5.10.1',
+    MIN_PERL_VERSION    => '5.14.0',
     PREREQ_PM           => {
         'Clone'         => '0.39',
         'Data::Dump'    => '1.23',
