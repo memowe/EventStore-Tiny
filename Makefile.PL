@@ -6,7 +6,7 @@ use warnings;
 use ExtUtils::MakeMaker;
 
 WriteMakefile(
-    NAME                => 'EventStore-Tiny',
+    NAME                => 'EventStore::Tiny',
     VERSION_FROM        => 'lib/EventStore/Tiny.pm',
     ABSTRACT            => 'A minimal event sourcing framework.',
     AUTHOR              => 'Mirko Westermeier <mirko@westermeier.de>',
