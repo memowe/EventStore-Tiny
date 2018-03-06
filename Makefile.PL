@@ -20,6 +20,7 @@ WriteMakefile(
     MIN_PERL_VERSION    => '5.14.0',
     PREREQ_PM           => {
         'Clone'         => '0.39',
+        'Data::Compare' => '1.25',
         'Data::Dump'    => '1.23',
         'Mo'            => '0.38',
         'UUID::Tiny'    => '1.04',

@@ -72,6 +72,38 @@ subtest 'Snapshot' => sub {
         is $sn->timestamp => $sep_ts, 'Correct snapshot timestamp';
         is $sn->state->{foo} => 42, 'Correct snapshot';
     };
+
+    subtest 'Verification' => sub {
+
+        for my $i (0 .. $#{$est->events->events}) {
+            my $subtest_name = 'Correct ' . ($i + 1);
+
+            subtest $subtest_name => sub {
+
+                # create a correct snapshot
+                my $sep_ts = $est->events->events->[$i]->timestamp;
+                my $correct_sn = EventStore::Tiny::Snapshot->new(
+                    state       => $est->events->until($sep_ts)->apply_to,
+                    timestamp   => $sep_ts,
+                );
+
+                # verify
+                ok $est->is_correct_snapshot($correct_sn), 'Verified';
+            };
+        }
+
+        subtest 'Incorrect' => sub {
+
+            # create an incorrect snapshot
+            my $incorrect_sn = EventStore::Tiny::Snapshot->new(
+                state       => {xnorfzt => 666},
+                timestamp   => $est->events->events->[1]->timestamp,
+            );
+
+            # verify
+            ok not($est->is_correct_snapshot($incorrect_sn)), 'Not verified';
+        };
+    };
 };
 
 done_testing;

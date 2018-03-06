@@ -9,6 +9,7 @@ use EventStore::Tiny::Snapshot;
 
 use Clone qw(clone);
 use Storable;
+use Data::Compare; # exports Compare()
 
 # enable handling of CODE refs (as event actions are code refs)
 $Storable::Deparse  = 1;
@@ -84,6 +85,16 @@ sub snapshot {
         state       => $es->apply_to($self->init_state),
         timestamp   => $es->last_timestamp,
     );
+}
+
+sub is_correct_snapshot {
+    my ($self, $snapshot) = @_;
+
+    # replay events until snapshot time
+    my $our_sn = $self->snapshot($snapshot->timestamp);
+
+    # true iff the generated state looks the same
+    return Compare($snapshot->state, $our_sn->state);
 }
 
 1;
