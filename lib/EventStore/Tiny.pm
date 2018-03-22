@@ -75,9 +75,9 @@ sub init_state {
 sub snapshot {
     my ($self, $timestamp) = @_;
 
-    # decide which event (sub) stream to work on
-    my $es = $self->events;
-    $es = $es->until($timestamp) if defined $timestamp;
+    # work on latest timestamp if not specified
+    $timestamp //= $self->events->last_timestamp;
+    my $es = $self->events->until($timestamp);
 
     # done
     return EventStore::Tiny::Snapshot->new(
