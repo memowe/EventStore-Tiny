@@ -15,7 +15,7 @@ use Data::Compare; # exports Compare()
 $Storable::Deparse  = 1;
 $Storable::Eval     = 1;
 
-our $VERSION = '0.01';
+our $VERSION = '0.1';
 
 has registry    => {};
 has events      => sub {EventStore::Tiny::EventStream->new(
