@@ -22,6 +22,8 @@ has events      => sub {EventStore::Tiny::EventStream->new(
                         logger => shift->logger)};
 has init_data   => {};
 has logger      => sub {EventStore::Tiny::Logger->log_cb};
+has cache_size  => 0; # default: store snapshot every time. no caching: undef
+has '_cached_snapshot';
 
 # class method to construct
 sub new_from_file {
@@ -75,16 +77,38 @@ sub init_state {
 
 sub snapshot {
     my ($self, $timestamp) = @_;
+    my $state = $self->init_state;
 
-    # decide which event (sub) stream to work on
-    my $es = $self->events;
-    $es = $es->until($timestamp) if defined $timestamp;
+    # work on latest timestamp if not specified
+    $timestamp //= $self->events->last_timestamp;
+    my $es = $self->events->until($timestamp);
 
-    # done
-    return EventStore::Tiny::Snapshot->new(
-        state       => $es->apply_to($self->init_state),
+    # check if the cached snapshot can be used
+    my $cached_sn = $self->_cached_snapshot;
+    if (defined $cached_sn and $cached_sn->timestamp <= $timestamp) {
+        $state  = clone $cached_sn->state;
+        $es     = $es->after($cached_sn->timestamp);
+    }
+
+    # calculate snapshot
+    my $snapshot = EventStore::Tiny::Snapshot->new(
+        state       => $es->apply_to($state),
         timestamp   => $es->last_timestamp,
     );
+
+    # caching disabled: done
+    return $snapshot unless defined $self->cache_size;
+
+    # cache snapshot if no cache present yet, but neccessary
+    $self->_cached_snapshot($snapshot)
+        if not defined $self->_cached_snapshot and $es->length > 0;
+
+    # cache snapshot if new event count > cache size
+    $self->_cached_snapshot($snapshot)
+        if @{$es->events} > $self->cache_size;
+
+    # done
+    return $snapshot;
 }
 
 sub is_correct_snapshot {
