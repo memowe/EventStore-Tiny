@@ -12,7 +12,6 @@ sub new_from_template {
         name            => $event->name,
         transformation  => $event->transformation,
         data            => $data,
-        logger          => $event->logger,
     );
 }
 

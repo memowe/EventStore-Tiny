@@ -120,6 +120,29 @@ subtest 'Integration' => sub {
     my $log_str = $print_target->history->[3];
     is $log_str => "TestEventStored: { p => \"q\", x => \"y\" }\n",
         'Correct event string representation logged';
+
+    subtest 'Update logger' => sub {
+
+        # prepare new logger
+        my $tmp_print_target = TestFileHandle->new;
+        my $logger = EventStore::Tiny::Logger->log_cb(
+            print_target => $tmp_print_target,
+        );
+
+        # inject
+        $es->logger($logger);
+
+        # add another event
+        $es->store_event(TestEventStored => {x => 'q', p => 'y'});
+        $es->snapshot;
+
+        # old logger unchanged
+        is $print_target->length => 4, 'Correct old history size';
+        is $tmp_print_target->length => 1, 'Correct new history size';
+        my $log_str = $tmp_print_target->history->[0];
+        is $log_str => "TestEventStored: { p => \"y\", x => \"q\" }\n",
+            'Correct event string representation logged';
+    };
 };
 
 done_testing;

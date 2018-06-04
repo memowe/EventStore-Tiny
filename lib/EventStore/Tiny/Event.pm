@@ -9,7 +9,6 @@ has timestamp       => is => 'ro';
 has name            => required => 1;
 has transformation  => sub {sub {}};
 has data            => {};
-has 'logger'; # callback
 
 sub BUILD {
     my $self = shift;
@@ -21,13 +20,13 @@ sub BUILD {
 
 # lets transformation work on state by side-effect
 sub apply_to {
-    my ($self, $state) = @_;
+    my ($self, $state, $logger) = @_;
 
     # apply the transformation by side effect
     $self->transformation->($state, $self->data);
 
     # log this event, if logger present
-    $self->logger->($self) if defined $self->logger;
+    $logger->($self) if defined $logger;
 
     # returned the same state just in case
     return $state;
