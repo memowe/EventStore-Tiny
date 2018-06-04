@@ -28,13 +28,13 @@ sub last_timestamp {
 }
 
 sub apply_to {
-    my ($self, $state) = @_;
+    my ($self, $state, $logger) = @_;
 
     # start with empty state by default
     $state = {} unless defined $state;
 
     # apply all events
-    $_->apply_to($state) for @{$self->events};
+    $_->apply_to($state, $logger) for @{$self->events};
 
     # done
     return $state;
