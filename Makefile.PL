@@ -26,6 +26,7 @@ WriteMakefile(
         'UUID::Tiny'    => '1.04',
     },
     TEST_REQUIRES       => {
+        'Test::Pod'             => '1.52',
         'Test::Pod::Coverage'   => '1.10',
     },
     test                => {TESTS => 't/*.t t/*/*.t'}
