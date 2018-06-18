@@ -26,6 +26,7 @@ WriteMakefile(
         'UUID::Tiny'    => '1.04',
     },
     TEST_REQUIRES       => {
+        'Test::Perl::Critic'    => '1.04',
         'Test::Pod'             => '1.52',
         'Test::Pod::Coverage'   => '1.10',
     },
