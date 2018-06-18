@@ -56,6 +56,10 @@ Copyright (c) 2018 [Mirko Westermeier][mw] (mail: [mirko@westermeier.de][mail])
 
 Released under the MIT License (see [LICENSE.txt][license]).
 
+### Contributors
+
+- Mohammad S Anwar (@manwar)
+
 [mw]: http://mirko.westermeier.de
 [mail]: mailto:mirko@westermeier.de
 [license]: LICENSE.txt

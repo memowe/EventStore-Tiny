@@ -296,4 +296,14 @@ Copyright (c) 2018 Mirko Westermeier (mail: mirko@westermeier.de)
 
 Released under the MIT License (see LICENSE.txt for details).
 
+=head2 CONTRIBUTORS
+
+=over 2
+
+=item *
+
+Mohammad S Anwar (@manwar)
+
+=back
+
 =cut
