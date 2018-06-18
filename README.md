@@ -1,4 +1,10 @@
-# EventStore::Tiny [![Build Status](https://travis-ci.org/memowe/EventStore-Tiny.svg?branch=master)](https://travis-ci.org/memowe/EventStore-Tiny)
+[![Build Status](https://travis-ci.org/memowe/EventStore-Tiny.svg?branch=master)](https://travis-ci.org/memowe/EventStore-Tiny)
+[![Codecov coverage status](https://codecov.io/gh/memowe/EventStore-Tiny/branch/master/graph/badge.svg)](https://codecov.io/gh/memowe/EventStore-Tiny)
+[![Coveralls coverage status](https://coveralls.io/repos/github/memowe/EventStore-Tiny/badge.svg?branch=master)](https://coveralls.io/github/memowe/EventStore-Tiny?branch=master)
+[![CPAN version](https://badge.fury.io/pl/EventStore-Tiny.svg)](https://badge.fury.io/pl/EventStore-Tiny)
+![](https://img.shields.io/badge/this%20badge%20is-yellow-yellow.svg)
+
+# EventStore::Tiny
 
 A minimal event sourcing framework.
 
