@@ -215,13 +215,13 @@ A subref (callback) which will be called each time an event is applied to the st
 
     my $store = EventStore::Tiny->new_from_file($filename);
 
-Deserializes an existing store object which was L<store>d before.
+Deserializes an existing store object which was L</store>d before.
 
 =head3 store
 
     $store->store($filename);
 
-Serializes the store object to the file system. It can be deserialized via L<new_from_file> later.
+Serializes the store object to the file system. It can be deserialized via L</new_from_file> later.
 
 =head2 EVENT SOURCING WORKFLOW
 
@@ -232,7 +232,7 @@ Serializes the store object to the file system. It can be deserialized via L<new
         # change $state depending on $data (by side-effect)
     });
 
-Stores an event type in the system by name and action on the C<$state>. Events of this type can be added later to the event store by setting concrete C<$data> with L<store_event>.
+Stores an event type in the system by name and action on the C<$state>. Events of this type can be added later to the event store by setting concrete C<$data> with L</store_event>.
 
 =head3 store_event
 
@@ -256,25 +256,25 @@ Returns a L<EventStore::Tiny::Snapshot> object which basically consists of the c
 
     my $types = $store->event_names;
 
-Returns an arrayref containing all event type names of registered events, sorted by name. These names are the values of L<registry>.
+Returns an arrayref containing all event type names of registered events, sorted by name. These names are the values of L</registry>.
 
 =head3 registry
 
     my $user_added = $store->registry->{UserAdded};
 
-Returns a hashref with event type names as keys and event types as values, which are L<EventStore::Tiny::Event> instances. Should be manipulated by L<register_event> only.
+Returns a hashref with event type names as keys and event types as values, which are L<EventStore::Tiny::Event> instances. Should be manipulated by L</register_event> only.
 
 =head3 events
 
     my $event_stream = $store->events;
 
-Returns the internal L<EventStore::Tiny::EventStream> object that stores all concrete events (L<EventStore::Tiny::DataEvent> instances). Should be manipulated by L<store_event> only. Events should never be changed or removed.
+Returns the internal L<EventStore::Tiny::EventStream> object that stores all concrete events (L<EventStore::Tiny::DataEvent> instances). Should be manipulated by L</store_event> only. Events should never be changed or removed.
 
 =head3 init_state
 
     my $state = $store->init_state;
 
-Returns a cloned copy of the ininitial state all events are applied on, which was defined by L<init_data> as a hashref.
+Returns a cloned copy of the ininitial state all events are applied on, which was defined by L</init_data> as a hashref.
 
 =head2 OTHER
 
@@ -284,7 +284,7 @@ Returns a cloned copy of the ininitial state all events are applied on, which wa
         # ...
     }
 
-Checks if a given L<EventStore::Tiny::Snapshot> instance is a valid snapshot of our L<events> event store. Mostly used for testing.
+Checks if a given L<EventStore::Tiny::Snapshot> instance is a valid snapshot of our L</events> event store. Mostly used for testing.
 
 =head1 REPOSITORY AND ISSUE TRACKER
 
