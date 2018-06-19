@@ -14,23 +14,37 @@ sub print {push @{shift->history}, shift}
 sub length {scalar @{shift->history}}
 1;
 package main;
-my $print_target = TestFileHandle->new;
 
 subtest 'Default logger' => sub {
+    my $print_target = TestFileHandle->new;
 
     # prepare logger
     use_ok 'EventStore::Tiny::Logger';
     my $logger = EventStore::Tiny::Logger->new(print_target => $print_target);
 
+    # log a dummy event type (shouldn't happen)
+    subtest 'Dummy event type' => sub {
+
+        $logger->log(EventStore::Tiny::Event->new(
+            name => 'TestEventTypeStored',
+        ));
+        is $print_target->length => 1, 'Correct event history size';
+        my $log_str = $print_target->history->[0];
+        is $log_str => "TestEventTypeStored: NO DATA\n",
+            'Correct event type string representation logged';
+    };
+
     # log a dummy event
-    $logger->log(EventStore::Tiny::DataEvent->new(
-        name => 'TestEventStored',
-        data => {a => 17, b => 42},
-    ));
-    is $print_target->length => 1, 'Correct event history size';
-    my $log_str = $print_target->history->[0];
-    is $log_str => "TestEventStored: { a => 17, b => 42 }\n",
-        'Correct event string representation logged';
+    subtest 'Dummy event' => sub {
+        $logger->log(EventStore::Tiny::DataEvent->new(
+            name => 'TestEventStored',
+            data => {a => 17, b => 42},
+        ));
+        is $print_target->length => 2, 'Correct event history size';
+        my $log_str = $print_target->history->[1];
+        is $log_str => "TestEventStored: { a => 17, b => 42 }\n",
+            'Correct event string representation logged';
+    };
 
     subtest 'Callback generation' => sub {
 
@@ -47,8 +61,8 @@ subtest 'Default logger' => sub {
             ));
 
             # test
-            is $print_target->length => 2, 'Correct event history size';
-            my $log_str = $print_target->history->[1];
+            is $print_target->length => 3, 'Correct event history size';
+            my $log_str = $print_target->history->[2];
             is $log_str => "TestEventStored: { bar => 2, foo => 1 }\n",
                 'Correct event string representation logged';
         };
@@ -67,8 +81,8 @@ subtest 'Default logger' => sub {
             ));
 
             # test
-            is $print_target->length => 3, 'Correct event history size';
-            my $log_str = $print_target->history->[2];
+            is $print_target->length => 4, 'Correct event history size';
+            my $log_str = $print_target->history->[3];
             is $log_str => "TestEventStored: { bar => 2, baz => 3 }\n",
                 'Correct event string representation logged';
         };
@@ -102,10 +116,74 @@ subtest 'Default logger' => sub {
 };
 
 subtest 'Integration' => sub {
+    my $print_target = TestFileHandle->new;
 
+    subtest 'Direct event application logging' => sub {
+
+        # prepare logger
+        my $logger = EventStore::Tiny::Logger->new(print_target => $print_target);
+
+        subtest 'Event Type' => sub {
+
+            # prepare event
+            my $event = EventStore::Tiny::Event->new(
+                name            => 'Foo',
+                transformation  => sub {shift->{foo} = 42},
+            );
+
+            subtest 'With logger set' => sub {
+                my $state = {};
+                $event->apply_to($state, $logger->log_cb);
+                is_deeply $state => {foo => 42}, 'Correct state';
+                is $print_target->length => 1, 'Correct history size';
+                my $log_str = $print_target->history->[0];
+                is $log_str => "Foo: NO DATA\n", 'Correct log string';
+            };
+
+            subtest 'Without logger' => sub {
+                my $state = {};
+                $event->apply_to($state);
+                is_deeply $state => {foo => 42}, 'Correct state';
+                is $print_target->length => 1, 'History unchanged';
+            };
+        };
+
+        subtest 'Data Event' => sub {
+
+            # prepare
+            my $event = EventStore::Tiny::DataEvent->new(
+                name            => 'Bar',
+                data            => {add => 2},
+                transformation  => sub {
+                    my ($state, $data) = @_;
+                    $state->{foo} = 17 + $data->{add};
+                },
+            );
+
+            subtest 'With logger set' => sub {
+                my $state = {};
+                $event->apply_to($state, $logger->log_cb);
+                is_deeply $state => {foo => 19}, 'Correct state';
+                is $print_target->length => 2, 'Correct history size';
+                my $log_str = $print_target->history->[1];
+                is $log_str => "Bar: { add => 2 }\n", 'Correct log string';
+            };
+
+            subtest 'Without logger' => sub {
+                my $state = {};
+                $event->apply_to($state);
+                is_deeply $state => {foo => 19}, 'Correct state';
+                is $print_target->length => 2, 'History unchanged';
+            };
+
+        };
+    };
+
+    # prepare integration into event store
+    $print_target = TestFileHandle->new;
     my $es = EventStore::Tiny->new(
         logger => EventStore::Tiny::Logger->log_cb(
-            print_target => $print_target
+            print_target => $print_target,
         ),
     );
 
@@ -115,8 +193,8 @@ subtest 'Integration' => sub {
     $es->snapshot;
 
     # test
-    is $print_target->length => 4, 'Correct event history size';
-    my $log_str = $print_target->history->[3];
+    is $print_target->length => 1, 'Correct event history size';
+    my $log_str = $print_target->history->[0];
     is $log_str => "TestEventStored: { p => \"q\", x => \"y\" }\n",
         'Correct event string representation logged';
 
@@ -138,10 +216,15 @@ subtest 'Integration' => sub {
             $es->snapshot;
 
             # old logger unchanged
-            is $print_target->length => 4, 'Correct old history size';
+            is $print_target->length => 1, 'Correct old history size';
+            my $log_str = $print_target->history->[0];
+            is $log_str => "TestEventStored: { p => \"q\", x => \"y\" }\n",
+                'Correct event string representation logged';
+
+            # new logger changed
             is $tmp_print_target->length => 1, 'Correct new history size';
-            my $log_str = $tmp_print_target->history->[0];
-            is $log_str => "TestEventStored: { p => \"y\", x => \"q\" }\n",
+            my $tmp_log_str = $tmp_print_target->history->[0];
+            is $tmp_log_str => "TestEventStored: { p => \"y\", x => \"q\" }\n",
                 'Correct event string representation logged';
         };
 
@@ -150,14 +233,16 @@ subtest 'Integration' => sub {
             # remove
             $es->logger(undef);
 
-            # add another event
-            $es->store_event(TestEventStored => {x => 17, y => 42});
+            # old logger unchanged
+            is $print_target->length => 1, 'Correct old history size';
+            my $log_str = $print_target->history->[0];
+            is $log_str => "TestEventStored: { p => \"q\", x => \"y\" }\n",
+                'Correct event string representation logged';
 
-            # old and new logger unchanged
-            is $print_target->length => 4, 'Correct old history size';
+            # new logger changed
             is $tmp_print_target->length => 1, 'Correct new history size';
-            my $log_str = $tmp_print_target->history->[0];
-            is $log_str => "TestEventStored: { p => \"y\", x => \"q\" }\n",
+            my $tmp_log_str = $tmp_print_target->history->[0];
+            is $tmp_log_str => "TestEventStored: { p => \"y\", x => \"q\" }\n",
                 'Correct event string representation logged';
         };
     };
