@@ -9,8 +9,7 @@ use EventStore::Tiny::DataEvent;
 
 # prepare test "file handle"
 package TestFileHandle;
-use Mo qw(default);
-has history => [];
+use Class::Tiny {history => sub {[]}};
 sub print {push @{shift->history}, shift}
 sub length {scalar @{shift->history}}
 1;
@@ -129,19 +128,38 @@ subtest 'Integration' => sub {
             print_target => $tmp_print_target,
         );
 
-        # inject
-        $es->logger($logger);
+        subtest 'Update' => sub {
 
-        # add another event
-        $es->store_event(TestEventStored => {x => 'q', p => 'y'});
-        $es->snapshot;
+            # inject
+            $es->logger($logger);
 
-        # old logger unchanged
-        is $print_target->length => 4, 'Correct old history size';
-        is $tmp_print_target->length => 1, 'Correct new history size';
-        my $log_str = $tmp_print_target->history->[0];
-        is $log_str => "TestEventStored: { p => \"y\", x => \"q\" }\n",
-            'Correct event string representation logged';
+            # add another event
+            $es->store_event(TestEventStored => {x => 'q', p => 'y'});
+            $es->snapshot;
+
+            # old logger unchanged
+            is $print_target->length => 4, 'Correct old history size';
+            is $tmp_print_target->length => 1, 'Correct new history size';
+            my $log_str = $tmp_print_target->history->[0];
+            is $log_str => "TestEventStored: { p => \"y\", x => \"q\" }\n",
+                'Correct event string representation logged';
+        };
+
+        subtest 'Remove' => sub {
+
+            # remove
+            $es->logger(undef);
+
+            # add another event
+            $es->store_event(TestEventStored => {x => 17, y => 42});
+
+            # old and new logger unchanged
+            is $print_target->length => 4, 'Correct old history size';
+            is $tmp_print_target->length => 1, 'Correct new history size';
+            my $log_str = $tmp_print_target->history->[0];
+            is $log_str => "TestEventStored: { p => \"y\", x => \"q\" }\n",
+                'Correct event string representation logged';
+        };
     };
 };
 

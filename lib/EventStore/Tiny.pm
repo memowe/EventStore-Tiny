@@ -1,5 +1,7 @@
 package EventStore::Tiny;
-use Mo qw(default);
+
+use strict;
+use warnings;
 
 use EventStore::Tiny::Logger;
 use EventStore::Tiny::Event;
@@ -17,13 +19,14 @@ $Storable::Eval     = 1;
 
 our $VERSION = '0.21';
 
-has registry    => {};
-has events      => sub {EventStore::Tiny::EventStream->new(
-                        logger => shift->logger)};
-has init_data   => {};
-has logger      => sub {EventStore::Tiny::Logger->log_cb};
-has cache_size  => 0; # default: store snapshot every time. no caching: undef
-has '_cached_snapshot';
+use Class::Tiny {
+    registry    => sub {{}},
+    events      => sub {EventStore::Tiny::EventStream->new(
+                        logger => shift->logger)},
+    init_data   => sub {{}},
+    logger      => sub {EventStore::Tiny::Logger->log_cb},
+    cache_size  => 0, # default: store snapshot every time. no caching: undef
+}, '_cached_snapshot';
 
 # class method to construct
 sub new_from_file {
@@ -93,7 +96,7 @@ sub snapshot {
     # calculate snapshot
     my $snapshot = EventStore::Tiny::Snapshot->new(
         state       => $es->apply_to($state, $self->logger),
-        timestamp   => $es->last_timestamp,
+        timestamp   => $es->last_timestamp // 0,
     );
 
     # caching disabled: done
@@ -303,6 +306,10 @@ Released under the MIT License (see LICENSE.txt for details).
 =item *
 
 Mohammad S Anwar (@manwar)
+
+=item *
+
+Toby Inkster (@tobyink)
 
 =back
 

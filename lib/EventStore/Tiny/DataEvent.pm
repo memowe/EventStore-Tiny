@@ -1,8 +1,12 @@
 package EventStore::Tiny::DataEvent;
-use Mo qw(default);
-extends 'EventStore::Tiny::Event';
+use parent 'EventStore::Tiny::Event';
 
-has data => {};
+use strict;
+use warnings;
+
+use Class::Tiny {
+    data => sub {{}},
+};
 
 sub new_from_template {
     my ($class, $event, $data) = @_;
@@ -13,6 +17,20 @@ sub new_from_template {
         transformation  => $event->transformation,
         data            => $data,
     );
+}
+
+# lets transformation work on state by side-effect
+sub apply_to {
+    my ($self, $state, $logger) = @_;
+
+    # apply the transformation by side effect
+    $self->transformation->($state, $self->data);
+
+    # log this event, if logger present
+    $logger->($self) if defined $logger;
+
+    # returned the same state just in case
+    return $state;
 }
 
 1;
@@ -42,6 +60,12 @@ Sets concrete data for this event which will be used during application.
     );
 
 Creates a new data event based on an event (usually representing an event type which was registered before using L<EventStore::Tiny/register_event>).
+
+=head3 apply_to
+
+    $event->apply_to(\%state, $logger);
+
+Applies this event's L<transformation> to the given state (by side-effect) and its L</data>. If a C<$logger> as a subref is given, it is used to log this application.
 
 =head1 SEE ALSO
 

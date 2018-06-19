@@ -65,6 +65,7 @@ Released under the MIT License (see [LICENSE.txt][license]).
 ### Contributors
 
 - Mohammad S Anwar (@manwar)
+- Toby Inkster (@tobyink)
 
 [mw]: http://mirko.westermeier.de
 [mail]: mailto:mirko@westermeier.de
