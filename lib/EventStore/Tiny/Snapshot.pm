@@ -3,14 +3,17 @@ package EventStore::Tiny::Snapshot;
 use strict;
 use warnings;
 
-use subs 'timestamp';
 use Class::Tiny {
     state       => sub {die "state is required.\n"},
     timestamp   => sub {die "timestamp is required.\n"},
 };
 
-sub timestamp {
-    shift->{timestamp}; # read-only accessor
+sub BUILD {
+    my $self = shift;
+
+    # check non-lazy
+    $self->state;
+    $self->timestamp;
 }
 
 1;
