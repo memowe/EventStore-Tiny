@@ -9,8 +9,7 @@ use EventStore::Tiny::DataEvent;
 
 # prepare test "file handle"
 package TestFileHandle;
-use Mo qw(default);
-has history => [];
+use Class::Tiny {history => sub {[]}};
 sub print {push @{shift->history}, shift}
 sub length {scalar @{shift->history}}
 1;

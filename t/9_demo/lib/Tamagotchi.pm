@@ -1,11 +1,13 @@
 package Tamagotchi;
-use Mo qw(default build);
+
+use strict;
+use warnings;
 
 use FindBin;
 use lib "$FindBin::Bin/../../lib";
 use EventStore::Tiny;
 
-has _event_store => EventStore::Tiny->new;
+use Class::Tiny {_event_store => sub {EventStore::Tiny->new}};
 
 sub data {shift->_event_store->snapshot->state}
 sub _register_event {shift->_event_store->register_event(@_)}
