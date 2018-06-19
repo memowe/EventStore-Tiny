@@ -1,6 +1,9 @@
 package EventStore::Tiny::DataEvent;
 use parent 'EventStore::Tiny::Event';
 
+use strict;
+use warnings;
+
 use Class::Tiny {
     data => sub {{}},
 };

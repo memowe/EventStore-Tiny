@@ -1,7 +1,11 @@
 package EventStore::Tiny::EventStream;
-use Mo 'default';
 
-has events => [];
+use strict;
+use warnings;
+
+use Class::Tiny {
+    events => sub {[]},
+};
 
 sub add_event {
     my ($self, $event) = @_;

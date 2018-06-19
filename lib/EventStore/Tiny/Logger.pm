@@ -1,7 +1,11 @@
 package EventStore::Tiny::Logger;
-use Mo qw(default);
 
-has print_target => sub {select}; # selected output file handle
+use strict;
+use warnings;
+
+use Class::Tiny {
+    print_target => sub {select}, # selected output file handle
+};
 
 sub log {
     my ($self, $event) = @_;

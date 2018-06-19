@@ -1,8 +1,17 @@
 package EventStore::Tiny::Snapshot;
-use Mo qw(default required );
 
-has state       => (required => 1);
-has timestamp   => (required => 1, is => 'ro');
+use strict;
+use warnings;
+
+use subs 'timestamp';
+use Class::Tiny {
+    state       => sub {die 'state is required'},
+    timestamp   => sub {die 'timestamp is required'},
+};
+
+sub timestamp {
+    shift->{timestamp}; # read-only accessor
+}
 
 1;
 

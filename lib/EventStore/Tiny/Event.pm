@@ -1,5 +1,8 @@
 package EventStore::Tiny::Event;
 
+use strict;
+use warnings;
+
 use UUID::Tiny qw(create_uuid_as_string);
 use Time::HiRes qw(time);
 
