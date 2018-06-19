@@ -6,29 +6,43 @@ use Test::More;
 use_ok 'EventStore::Tiny::Event';
 use_ok 'EventStore::Tiny::DataEvent';
 
-subtest 'Default UUID' => sub {
+subtest 'Defaults' => sub {
 
-    # init and check UUID
-    my $ev = EventStore::Tiny::Event->new(name => 'foo');
-    ok defined $ev->uuid, 'Event has an UUID';
-    like $ev->uuid => qr/^(\w+-){4}\w+$/, 'UUID looks like an UUID string';
+    subtest 'UUID' => sub {
 
-    # check another event's UUID
-    my $ev2 = EventStore::Tiny::Event->new(name => 'foo');
-    isnt $ev->uuid => $ev2->uuid, 'Two different UUIDs';
-};
+        # init and check UUID
+        my $ev = EventStore::Tiny::Event->new(name => 'foo');
+        ok defined $ev->uuid, 'Event has an UUID';
+        like $ev->uuid => qr/^(\w+-){4}\w+$/, 'UUID looks like an UUID string';
 
-subtest 'Default high-resolution timestamp' => sub {
+        # check another event's UUID
+        my $ev2 = EventStore::Tiny::Event->new(name => 'foo');
+        isnt $ev->uuid => $ev2->uuid, 'Two different UUIDs';
+    };
 
-    # init and check timestamp
-    my $ev = EventStore::Tiny::Event->new(name => 'foo');
-    ok defined $ev->timestamp, 'Event has a timestamp';
-    like $ev->timestamp => qr/^\d+\.\d+$/, 'Timestamp looks like a decimal';
-    isnt $ev->timestamp => time, 'Timestamp is not the integer timestamp';
+    subtest 'High-resolution timestamp' => sub {
 
-    # check another event's timestamp
-    my $ev2 = EventStore::Tiny::Event->new(name => 'foo');
-    isnt $ev->timestamp => $ev2->timestamp, 'Time has passed.';
+        # init and check timestamp
+        my $ev = EventStore::Tiny::Event->new(name => 'foo');
+        ok defined $ev->timestamp, 'Event has a timestamp';
+        like $ev->timestamp => qr/^\d+\.\d+$/, 'Timestamp looks like a decimal';
+        isnt $ev->timestamp => time, 'Timestamp is not the integer timestamp';
+
+        # check another event's timestamp
+        my $ev2 = EventStore::Tiny::Event->new(name => 'foo');
+        isnt $ev->timestamp => $ev2->timestamp, 'Time has passed.';
+    };
+
+    subtest 'Name' => sub {
+        eval {EventStore::Tiny::Event->new};
+        like $@ => qr/name is required/, 'Name is required';
+    };
+
+    subtest 'Transformation' => sub {
+        my $tr = EventStore::Tiny::Event->new(name => 'foo')->transformation;
+        is ref($tr) => 'CODE', 'ISA subref';
+        is $tr->($_), undef, 'Does nothing';
+    };
 };
 
 subtest 'Construction arguments' => sub {
@@ -68,8 +82,12 @@ subtest 'Application' => sub {
 
 subtest 'Data event' => sub {
 
+    # check defaults
+    my $ev = EventStore::Tiny::DataEvent->new(name => 'quux');
+    is_deeply $ev->data => {}, 'Default data is an empty hash';
+
     # construct data-driven event
-    my $ev = EventStore::Tiny::DataEvent->new(
+    $ev = EventStore::Tiny::DataEvent->new(
         name            => 'foo',
         transformation  => sub {
             my ($state, $data) = @_;
