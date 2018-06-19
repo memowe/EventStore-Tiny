@@ -96,7 +96,7 @@ sub snapshot {
     # calculate snapshot
     my $snapshot = EventStore::Tiny::Snapshot->new(
         state       => $es->apply_to($state, $self->logger),
-        timestamp   => $es->last_timestamp,
+        timestamp   => $es->last_timestamp // 0,
     );
 
     # caching disabled: done
