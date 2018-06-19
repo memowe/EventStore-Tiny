@@ -12,7 +12,8 @@ sub log {
 
     # stringify
     use Data::Dump 'dump';
-    my $output = $event->name . ': ' . dump $event->data;
+    my $data    = $event->can('data') ? dump $event->data : 'NO DATA';
+    my $output = $event->name . ": $data";
 
     # print to given print handle
     $self->print_target->print("$output\n");
