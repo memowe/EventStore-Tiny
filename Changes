@@ -1,5 +1,6 @@
 ????    ????
     - Fix POD (@manwar)
+    - Use Class::Tiny instead of Mo (@tobyink)
 
 0.21    2018-06-17
     - Add POD documentation to all classes

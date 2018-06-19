@@ -307,6 +307,10 @@ Released under the MIT License (see LICENSE.txt for details).
 
 Mohammad S Anwar (@manwar)
 
+=item *
+
+Toby Inkster (@tobyink)
+
 =back
 
 =cut
