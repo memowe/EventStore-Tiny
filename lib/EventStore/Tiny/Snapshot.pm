@@ -5,8 +5,8 @@ use warnings;
 
 use subs 'timestamp';
 use Class::Tiny {
-    state       => sub {die 'state is required'},
-    timestamp   => sub {die 'timestamp is required'},
+    state       => sub {die "state is required.\n"},
+    timestamp   => sub {die "timestamp is required.\n"},
 };
 
 sub timestamp {

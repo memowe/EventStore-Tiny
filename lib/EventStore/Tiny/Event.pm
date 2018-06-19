@@ -9,7 +9,7 @@ use Time::HiRes qw(time);
 use Class::Tiny {
     uuid            => sub {create_uuid_as_string},
     timestamp       => sub {time},
-    name            => sub {die 'name is required'},
+    name            => sub {die "name is required.\n"},
     transformation  => sub {sub {}},
 };
 
