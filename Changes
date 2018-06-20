@@ -1,6 +1,7 @@
-????    ????
+0.22    2018-06-20
     - Fix POD (@manwar)
     - Use Class::Tiny instead of Mo (@tobyink)
+    - Improve test suite
 
 0.21    2018-06-17
     - Add POD documentation to all classes
