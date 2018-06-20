@@ -11,9 +11,9 @@ use EventStore::Tiny::Snapshot;
 
 use Clone qw(clone);
 use Storable;
-use Data::Compare; # exports Compare()
+use Data::Compare; # Exports Compare()
 
-# enable handling of CODE refs (as event actions are code refs)
+# Enable handling of CODE refs (as event actions are code refs)
 $Storable::Deparse  = 1;
 $Storable::Eval     = 1;
 
@@ -25,10 +25,10 @@ use Class::Tiny {
                         logger => shift->logger)},
     init_data   => sub {{}},
     logger      => sub {EventStore::Tiny::Logger->log_cb},
-    cache_size  => 0, # default: store snapshot every time. no caching: undef
+    cache_size  => 0, # Default: store snapshot every time. no caching: undef
 }, '_cached_snapshot';
 
-# class method to construct
+# Class method to construct
 sub new_from_file {
     my (undef, $fn) = @_;
     return retrieve($fn);
@@ -58,23 +58,23 @@ sub event_names {
 sub store_event {
     my ($self, $name, $data) = @_;
 
-    # lookup template event
+    # Lookup template event
     my $template = $self->registry->{$name};
     die "Unknown event: $name!\n" unless defined $template;
 
-    # specialize event with new data
+    # Specialize event with new data
     my $event = EventStore::Tiny::DataEvent->new_from_template(
         $template, $data
     );
 
-    # done
+    # Done
     $self->events->add_event($event);
 }
 
 sub init_state {
     my $self = shift;
 
-    # clone init data
+    # Clone init data
     return clone($self->init_data);
 }
 
@@ -82,45 +82,45 @@ sub snapshot {
     my ($self, $timestamp) = @_;
     my $state = $self->init_state;
 
-    # work on latest timestamp if not specified
+    # Work on latest timestamp if not specified
     $timestamp //= $self->events->last_timestamp;
     my $es = $self->events->until($timestamp);
 
-    # check if the cached snapshot can be used
+    # Check if the cached snapshot can be used
     my $cached_sn = $self->_cached_snapshot;
     if (defined $cached_sn and $cached_sn->timestamp <= $timestamp) {
         $state  = clone $cached_sn->state;
         $es     = $es->after($cached_sn->timestamp);
     }
 
-    # calculate snapshot
+    # Calculate snapshot
     my $snapshot = EventStore::Tiny::Snapshot->new(
         state       => $es->apply_to($state, $self->logger),
         timestamp   => $es->last_timestamp // 0,
     );
 
-    # caching disabled: done
+    # Caching disabled: done
     return $snapshot unless defined $self->cache_size;
 
-    # cache snapshot if no cache present yet, but neccessary
+    # Cache snapshot if no cache present yet, but neccessary
     $self->_cached_snapshot($snapshot)
         if not defined $self->_cached_snapshot and $es->length > 0;
 
-    # cache snapshot if new event count > cache size
+    # Cache snapshot if new event count > cache size
     $self->_cached_snapshot($snapshot)
         if @{$es->events} > $self->cache_size;
 
-    # done
+    # Done
     return $snapshot;
 }
 
 sub is_correct_snapshot {
     my ($self, $snapshot) = @_;
 
-    # replay events until snapshot time
+    # Replay events until snapshot time
     my $our_sn = $self->snapshot($snapshot->timestamp);
 
-    # true iff the generated state looks the same
+    # True iff the generated state looks the same
     return Compare($snapshot->state, $our_sn->state);
 }
 
@@ -232,7 +232,7 @@ Serializes the store object to the file system. It can be deserialized via L</ne
 
     $store->register_event(ConnectionRemoved => sub {
         my ($state, $data) = @_;
-        # change $state depending on $data (by side-effect)
+        # Change $state depending on $data (by side-effect)
     });
 
 Stores an event type in the system by name and action on the C<$state>. Events of this type can be added later to the event store by setting concrete C<$data> with L</store_event>.

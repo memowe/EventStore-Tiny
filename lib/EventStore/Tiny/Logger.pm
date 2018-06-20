@@ -4,28 +4,28 @@ use strict;
 use warnings;
 
 use Class::Tiny {
-    print_target => sub {select}, # selected output file handle
+    print_target => sub {select}, # Selected output file handle
 };
 
 sub log {
     my ($self, $event) = @_;
 
-    # stringify
+    # Stringify
     use Data::Dump 'dump';
     my $data    = $event->can('data') ? dump $event->data : 'NO DATA';
     my $output = $event->name . ": $data";
 
-    # print to given print handle
+    # Print to given print handle
     $self->print_target->print("$output\n");
 }
 
 sub log_cb {
     my ($self, @args) = @_;
 
-    # create a new logger if called as a package procedure
+    # Create a new logger if called as a package procedure
     $self = EventStore::Tiny::Logger->new(@args) unless ref $self;
 
-    # create a logging callback function
+    # Create a logging callback function
     return sub {$self->log(shift)};
 }
 

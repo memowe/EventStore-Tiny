@@ -10,7 +10,7 @@ use Class::Tiny {
 sub add_event {
     my ($self, $event) = @_;
 
-    # append event to internal list
+    # Append event to internal list
     push @{$self->events}, $event;
 }
 
@@ -34,40 +34,40 @@ sub last_timestamp {
 sub apply_to {
     my ($self, $state, $logger) = @_;
 
-    # start with empty state by default
+    # Start with empty state by default
     $state = {} unless defined $state;
 
-    # apply all events
+    # Apply all events
     $_->apply_to($state, $logger) for @{$self->events};
 
-    # done
+    # Done
     return $state;
 }
 
 sub substream {
     my ($self, $selector) = @_;
 
-    # default selector: take everything
+    # Default selector: take everything
     $selector = sub {1} unless defined $selector;
 
-    # filter events
+    # Filter events
     my @filtered = grep {$selector->($_)} @{$self->events};
 
-    # build new sub stream
+    # Build new sub stream
     return EventStore::Tiny::EventStream->new(events => \@filtered);
 }
 
 sub until {
     my ($self, $timestamp) = @_;
 
-    # all events until the given timestamp (including)
+    # All events until the given timestamp (including)
     return $self->substream(sub {$_->timestamp <= $timestamp});
 }
 
 sub after {
     my ($self, $timestamp) = @_;
 
-    # all events after the given timestamp (excluding)
+    # All events after the given timestamp (excluding)
     return $self->substream(sub {$_->timestamp > $timestamp});
 }
 

@@ -11,7 +11,7 @@ use Class::Tiny {
 sub BUILD {
     my $self = shift;
 
-    # check non-lazy
+    # Check non-lazy
     $self->state;
     $self->timestamp;
 }
