@@ -25,7 +25,7 @@ subtest 'Default logger' => sub {
     # log a dummy event type (shouldn't happen)
     subtest 'Dummy event type' => sub {
 
-        $logger->log(EventStore::Tiny::Event->new(
+        $logger->log_event(EventStore::Tiny::Event->new(
             name => 'TestEventTypeStored',
         ));
         is $print_target->length => 1, 'Correct event history size';
@@ -36,7 +36,7 @@ subtest 'Default logger' => sub {
 
     # log a dummy event
     subtest 'Dummy event' => sub {
-        $logger->log(EventStore::Tiny::DataEvent->new(
+        $logger->log_event(EventStore::Tiny::DataEvent->new(
             name => 'TestEventStored',
             data => {a => 17, b => 42},
         ));
@@ -98,7 +98,7 @@ subtest 'Default logger' => sub {
         my $logger = EventStore::Tiny::Logger->new;
 
         # log a dummy event
-        $logger->log(EventStore::Tiny::DataEvent->new(
+        $logger->log_event(EventStore::Tiny::DataEvent->new(
             name => 'TestEventStored',
             data => {baz => 17, quux => 42},
         ));

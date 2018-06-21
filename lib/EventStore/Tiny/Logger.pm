@@ -7,7 +7,7 @@ use Class::Tiny {
     print_target => sub {select}, # Selected output file handle
 };
 
-sub log {
+sub log_event {
     my ($self, $event) = @_;
 
     # Stringify
@@ -26,7 +26,7 @@ sub log_cb {
     $self = EventStore::Tiny::Logger->new(@args) unless ref $self;
 
     # Create a logging callback function
-    return sub {$self->log(shift)};
+    return sub {$self->log_event(shift)};
 }
 
 1;
@@ -49,9 +49,9 @@ EventStore::Tiny::Logger implements the following attributes and methods.
 
 Set or get the print target of this logger. By default it uses the L<"select"|perlfunc/"select RBITS,WBITS,EBITS,TIMEOUT">ed file handle (normally STDOUT) but everything with a print method will do.
 
-=head2 log
+=head2 log_event
 
-    $log->log($event);
+    $log->log_event($event);
 
 Logs the type name together with a dump of the concrete data of the given event to its L<print_target>.
 
