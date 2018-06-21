@@ -60,7 +60,7 @@ sub substream {
     return EventStore::Tiny::EventStream->new(events => \@filtered);
 }
 
-sub until {
+sub before {
     my ($self, $timestamp) = @_;
 
     # All events until the given timestamp (including)
@@ -133,9 +133,9 @@ Applies the whole stream (all events one after another) to a given state (by def
 
 Creates a substream using a given filter. All events the given subref returns true for are selected for this substream.
 
-=head2 until
+=head2 before
 
-    my $pre_stream = $stream->until($timestamp);
+    my $pre_stream = $stream->before($timestamp);
 
 Returns a substream with all events before or at the same time of a given timestamp.
 

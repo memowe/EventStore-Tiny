@@ -83,7 +83,7 @@ subtest 'Snapshot' => sub {
                 # create a correct snapshot
                 my $sep_ts = $est->events->events->[$i]->timestamp;
                 my $correct_sn = EventStore::Tiny::Snapshot->new(
-                    state       => $est->events->until($sep_ts)->apply_to,
+                    state       => $est->events->before($sep_ts)->apply_to,
                     timestamp   => $sep_ts,
                 );
 

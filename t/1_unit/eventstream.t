@@ -139,8 +139,8 @@ subtest 'Time substreams' => sub {
     my $sep_ts  = $events->[0]->timestamp;
     my $es      = EventStore::Tiny::EventStream->new(events => $events);
 
-    subtest 'Events until' => sub {
-        my $es_first = $es->until($sep_ts);
+    subtest 'Events before' => sub {
+        my $es_first = $es->before($sep_ts);
         isa_ok $es_first => 'EventStore::Tiny::EventStream';
         is $es_first->size => 1, 'Correct substream size';
         is $es_first->apply_to->{key} => $test_numbers[0],

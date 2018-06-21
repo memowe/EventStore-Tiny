@@ -83,7 +83,7 @@ sub snapshot {
 
     # Work on latest timestamp if not specified
     $timestamp //= $self->events->last_timestamp;
-    my $es = $self->events->until($timestamp);
+    my $es = $self->events->before($timestamp);
 
     # Check if the cached snapshot can be used
     my $cached_sn = $self->_cached_snapshot;
@@ -116,7 +116,7 @@ sub snapshot {
 sub is_correct_snapshot {
     my ($self, $snapshot) = @_;
 
-    # Replay events until snapshot time
+    # Replay events before snapshot time
     my $our_sn = $self->snapshot($snapshot->timestamp);
 
     # True iff the generated state looks the same
