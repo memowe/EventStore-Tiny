@@ -19,17 +19,17 @@ sub new_from_template {
     );
 }
 
-# lets transformation work on state by side-effect
+# Lets transformation work on state by side-effect
 sub apply_to {
     my ($self, $state, $logger) = @_;
 
-    # apply the transformation by side effect
+    # Apply the transformation by side effect
     $self->transformation->($state, $self->data);
 
-    # log this event, if logger present
+    # Log this event, if logger present
     $logger->($self) if defined $logger;
 
-    # returned the same state just in case
+    # Returned the same state just in case
     return $state;
 }
 
