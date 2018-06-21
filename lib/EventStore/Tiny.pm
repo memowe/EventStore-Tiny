@@ -34,11 +34,10 @@ sub new_from_file {
     return retrieve($fn);
 }
 
-{no warnings 'redefine';
-sub store {
+sub store_to_file {
     my ($self, $fn) = @_;
-    Storable::store($self, $fn);
-}}
+    store($self, $fn);
+}
 
 sub register_event {
     my ($self, $name, $transformation) = @_;
@@ -218,11 +217,11 @@ A subref (callback) which will be called each time an event is applied to the st
 
     my $store = EventStore::Tiny->new_from_file($filename);
 
-Deserializes an existing store object which was L</store>d before.
+Deserializes an existing store object which was L</store_to_file>d before.
 
-=head3 store
+=head3 store_to_file
 
-    $store->store($filename);
+    $store->store_to_file($filename);
 
 Serializes the store object to the file system. It can be deserialized via L</new_from_file> later.
 

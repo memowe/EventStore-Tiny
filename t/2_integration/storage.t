@@ -58,7 +58,7 @@ test_events(Prepared => $es);
 
 # store and load roundtrip
 my $tmp_fn = tmpnam;
-$es->store($tmp_fn);
+$es->store_to_file($tmp_fn);
 my $nes = EventStore::Tiny->new_from_file($tmp_fn);
 isa_ok $nes => 'EventStore::Tiny';
 

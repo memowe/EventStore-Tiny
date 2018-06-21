@@ -1,3 +1,6 @@
+????    ????
+    - Rename ES::T::store to store_to_file to improve API consistency
+
 0.22    2018-06-20
     - Fix POD (@manwar)
     - Use Class::Tiny instead of Mo (@tobyink)
