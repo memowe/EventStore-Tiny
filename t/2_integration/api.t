@@ -37,9 +37,9 @@ subtest 'Storing an event' => sub {
         'Correct exception for unknown event';
 
     # store an event
-    is $est->events->length => 0, 'No events';
+    is $est->events->size => 0, 'No events';
     $est->store_event(AnswerGiven => {answer => 42});
-    is $est->events->length => 1, 'One event after addition';
+    is $est->events->size => 1, 'One event after addition';
 
     # test if it's the right event
     is $est->events->apply_to->{answer} => 42, 'Correct event added';

@@ -103,7 +103,7 @@ sub snapshot {
 
     # Cache snapshot if no cache present yet, but neccessary
     $self->_cached_snapshot($snapshot)
-        if not defined $self->_cached_snapshot and $es->length > 0;
+        if not defined $self->_cached_snapshot and $es->size > 0;
 
     # Cache snapshot if new event count > cache size
     $self->_cached_snapshot($snapshot)

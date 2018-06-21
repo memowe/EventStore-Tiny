@@ -17,7 +17,7 @@ sub add_event {
     return $event;
 }
 
-sub length {
+sub size {
     my $self = shift;
     return scalar @{$self->events};
 }
@@ -31,7 +31,7 @@ sub first_timestamp {
 sub last_timestamp {
     my $self = shift;
     return unless @{$self->events};
-    return $self->events->[$self->length - 1]->timestamp;
+    return $self->events->[$self->size - 1]->timestamp;
 }
 
 sub apply_to {
@@ -100,9 +100,9 @@ Internal list representation (arrayref) of all events of this stream.
 
 Adds an event to the stream.
 
-=head2 length
+=head2 size
 
-    my $event_count = $stream->length;
+    my $event_count = $stream->size;
 
 Returns the number of events in this stream.
 

@@ -1,5 +1,6 @@
 ????    ????
     - Rename ES::T::store to store_to_file to improve API consistency
+    - Rename ES::T::EventStream::length to size to avoid clashes with the built-in function
 
 0.22    2018-06-20
     - Fix POD (@manwar)

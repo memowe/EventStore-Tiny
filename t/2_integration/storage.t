@@ -32,7 +32,7 @@ sub test_events {
     subtest "$name events" => sub {
 
     # test resulting events
-    is $es->events->length => 3, 'Got 3 events';
+    is $es->events->size => 3, 'Got 3 events';
     my $e1 = $es->events->events->[0];
     is $e1->name => 'FooTested', 'Correct first event name';
     is_deeply $e1->data => {name => 'test_field'},
