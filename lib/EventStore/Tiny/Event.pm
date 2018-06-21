@@ -19,6 +19,9 @@ sub BUILD {
     # Set non-lazy
     $self->name;
     $self->timestamp;
+
+    # Return nothing (will be ignored anyway)
+    return;
 }
 
 # Lets transformation work on state by side-effect

@@ -12,6 +12,9 @@ sub add_event {
 
     # Append event to internal list
     push @{$self->events}, $event;
+
+    # Done
+    return $event;
 }
 
 sub length {

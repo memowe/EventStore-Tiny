@@ -16,7 +16,7 @@ sub log {
     my $output = $event->name . ": $data";
 
     # Print to given print handle
-    $self->print_target->print("$output\n");
+    return $self->print_target->print("$output\n");
 }
 
 sub log_cb {

@@ -36,13 +36,13 @@ sub new_from_file {
 
 sub store_to_file {
     my ($self, $fn) = @_;
-    store($self, $fn);
+    return store($self, $fn);
 }
 
 sub register_event {
     my ($self, $name, $transformation) = @_;
 
-    $self->registry->{$name} = EventStore::Tiny::Event->new(
+    return $self->registry->{$name} = EventStore::Tiny::Event->new(
         name            => $name,
         transformation  => $transformation,
         logger          => $self->logger,
@@ -67,7 +67,7 @@ sub store_event {
     );
 
     # Done
-    $self->events->add_event($event);
+    return $self->events->add_event($event);
 }
 
 sub init_state {

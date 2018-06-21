@@ -14,6 +14,9 @@ sub BUILD {
     # Check non-lazy
     $self->state;
     $self->timestamp;
+
+    # Return nothing (will be ignored anyway)
+    return;
 }
 
 1;
