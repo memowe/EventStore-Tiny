@@ -59,7 +59,7 @@ Sets concrete data for this event which will be used during application.
         $event, {id => 17}
     );
 
-Creates a new data event based on an event (usually representing an event type which was registered before using L<EventStore::Tiny/register_event>).
+Creates a new data event based on another event (usually representing an L<EventStore::Tiny::Event> event type which was registered before using L<EventStore::Tiny/register_event>). The additional argument sets the new event's L</data> attribute.
 
 =head3 apply_to
 
