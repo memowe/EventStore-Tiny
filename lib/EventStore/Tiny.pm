@@ -133,6 +133,36 @@ sub is_correct_snapshot {
 
 EventStore::Tiny - A minimal event sourcing framework.
 
+=begin html
+
+<p>
+
+<a href="https://badge.fury.io/pl/EventStore-Tiny">
+    <img alt="CPAN version" src="https://badge.fury.io/pl/EventStore-Tiny.svg"></a>
+<a href="https://travis-ci.org/memowe/EventStore-Tiny">
+    <img alt="Travis CI tests" src="https://travis-ci.org/memowe/EventStore-Tiny.svg?branch=master"></a>
+<a href="https://codecov.io/gh/memowe/EventStore-Tiny">
+    <img alt="Codecov test coverage" src="https://codecov.io/gh/memowe/EventStore-Tiny/branch/master/graph/badge.svg"></a>
+<a href="https://coveralls.io/github/memowe/EventStore-Tiny?branch=master">
+    <img alt="Coveralls test coverage" src="https://coveralls.io/repos/github/memowe/EventStore-Tiny/badge.svg?branch=master"></a>
+<a href="http://cpants.cpanauthors.org/dist/EventStore-Tiny">
+    <img alt="CPANTS kwalitee score" src="https://cpants.cpanauthors.org/dist/EventStore-Tiny.png"></a>
+
+<br>
+
+<a href="http://www.cpantesters.org/distro/E/EventStore-Tiny.html?distmat=1">
+    <img alt="CPAN testers reports" src="https://img.shields.io/badge/testers-reports-blue.svg"></a>
+<a href="http://matrix.cpantesters.org/?dist=EventStore-Tiny">
+    <img alt="CPAN testers matrix" src="https://img.shields.io/badge/testers-matrix-blue.svg"></a>
+<a href="https://github.com/memowe/EventStore-Tiny">
+    <img alt="GitHub repository" src="https://img.shields.io/badge/github-code-blue.svg"></a>
+<a href="https://github.com/memowe/EventStore-Tiny/issues">
+    <img alt="GitHub issue tracker" src="https://img.shields.io/badge/github-issues-blue.svg"></a>
+
+</p>
+
+=end html
+
 =head1 SYNOPSIS
 
     use EventStore::Tiny;
