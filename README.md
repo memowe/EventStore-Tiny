@@ -1,8 +1,13 @@
-[![Build Status](https://travis-ci.org/memowe/EventStore-Tiny.svg?branch=master)](https://travis-ci.org/memowe/EventStore-Tiny)
-[![Codecov coverage status](https://codecov.io/gh/memowe/EventStore-Tiny/branch/master/graph/badge.svg)](https://codecov.io/gh/memowe/EventStore-Tiny)
-[![Coveralls coverage status](https://coveralls.io/repos/github/memowe/EventStore-Tiny/badge.svg?branch=master)](https://coveralls.io/github/memowe/EventStore-Tiny?branch=master)
 [![CPAN version](https://badge.fury.io/pl/EventStore-Tiny.svg)](https://badge.fury.io/pl/EventStore-Tiny)
-![](https://img.shields.io/badge/this%20badge%20is-yellow-yellow.svg)
+[![Travis CI tests](https://travis-ci.org/memowe/EventStore-Tiny.svg?branch=master)](https://travis-ci.org/memowe/EventStore-Tiny)
+[![Codecov test coverage](https://codecov.io/gh/memowe/EventStore-Tiny/branch/master/graph/badge.svg)](https://codecov.io/gh/memowe/EventStore-Tiny)
+[![Coveralls test coverage](https://coveralls.io/repos/github/memowe/EventStore-Tiny/badge.svg?branch=master)](https://coveralls.io/github/memowe/EventStore-Tiny?branch=master)
+[![CPANTS kwalitee score](https://cpants.cpanauthors.org/dist/EventStore-Tiny.png)](http://cpants.cpanauthors.org/dist/EventStore-Tiny)
+<br>
+[![CPAN testers reports](https://img.shields.io/badge/testers-reports-blue.svg)](http://www.cpantesters.org/distro/E/EventStore-Tiny.html?distmat=1)
+[![CPAN testers matrix](https://img.shields.io/badge/testers-matrix-blue.svg)](http://matrix.cpantesters.org/?dist=EventStore-Tiny)
+[![GitHub repository](https://img.shields.io/badge/github-code-blue.svg)](https://github.com/memowe/EventStore-Tiny)
+[![GitHub issue tracker](https://img.shields.io/badge/github-issues-blue.svg)](https://github.com/memowe/EventStore-Tiny/issues)
 
 # EventStore::Tiny
 
