@@ -58,15 +58,18 @@ In Event Sourcing, the state of a system is calculated as the application of a s
 
 ## Author and license
 
-Copyright (c) 2018 [Mirko Westermeier][mw] (mail: [mirko@westermeier.de][mail])
+Copyright (c) 2018 [Mirko Westermeier][mw] ([\@memowe][gh], [mirko@westermeier.de][mail])
 
 Released under the MIT License (see [LICENSE.txt][license]).
 
 ### Contributors
 
-- Mohammad S Anwar (@manwar)
-- Toby Inkster (@tobyink)
+- Mohammad S Anwar ([\@manwar][manwar])
+- Toby Inkster ([\@tobyink][tobyink])
 
 [mw]: http://mirko.westermeier.de
+[gh]: https://github.com/memowe
 [mail]: mailto:mirko@westermeier.de
 [license]: LICENSE.txt
+[manwar]: https://github.com/manwar
+[tobyink]: https://github.com/tobyink

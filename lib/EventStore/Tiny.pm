@@ -324,7 +324,7 @@ EventStore::Tiny's source repository is hosted on L<GitHub|https://github.com/me
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2018 Mirko Westermeier (mail: mirko@westermeier.de)
+Copyright (c) 2018 L<Mirko Westermeier|http://mirko.westermeier.de> (L<@memowe|https://github.com/memowe>, L<mirko@westermeier.de|mailto:mirko@westermeier.de>)
 
 Released under the MIT License (see LICENSE.txt for details).
 
@@ -334,11 +334,11 @@ Released under the MIT License (see LICENSE.txt for details).
 
 =item *
 
-Mohammad S Anwar (@manwar)
+Mohammad S Anwar (L<@manwar|https://github.com/manwar>)
 
 =item *
 
-Toby Inkster (@tobyink)
+Toby Inkster (L<@tobyink|https://github.com/tobyink>)
 
 =back
 
