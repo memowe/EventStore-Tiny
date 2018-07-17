@@ -20,12 +20,12 @@ $Storable::Eval     = 1;
 our $VERSION = '0.3';
 
 use Class::Tiny {
-    registry    => sub {{}},
-    events      => sub {EventStore::Tiny::EventStream->new(
-                        logger => shift->logger)},
-    init_data   => sub {{}},
-    logger      => sub {EventStore::Tiny::Logger->log_cb},
-    cache_size  => 0, # Default: store snapshot every time. no caching: undef
+    registry        => sub {{}},
+    events          => sub {EventStore::Tiny::EventStream->new(
+                             logger => shift->logger)},
+    init_data       => sub {{}},
+    logger          => sub {EventStore::Tiny::Logger->log_cb},
+    cache_distance  => 0, # Default: store snapshot each time. no caching: undef
 }, '_cached_snapshot';
 
 # Class method to construct
@@ -99,7 +99,7 @@ sub snapshot {
     );
 
     # Caching disabled: done
-    return $snapshot unless defined $self->cache_size;
+    return $snapshot unless defined $self->cache_distance;
 
     # Cache snapshot if no cache present yet, but neccessary
     $self->_cached_snapshot($snapshot)
@@ -107,7 +107,7 @@ sub snapshot {
 
     # Cache snapshot if new event count > cache size
     $self->_cached_snapshot($snapshot)
-        if @{$es->events} > $self->cache_size;
+        if @{$es->events} > $self->cache_distance;
 
     # Done
     return $snapshot;
@@ -233,7 +233,7 @@ Standard constructor. Understands all attributes as arguments. For most use case
 
 A hashref representing the initial state. B<Default: C<{}>>
 
-=item cache_size
+=item cache_distance
 
 The number of events after a new snapshot is cached for accellerated access. 0 means the cache is updated after each event. undef means the system does not use any caching. B<Default: 0>
 
