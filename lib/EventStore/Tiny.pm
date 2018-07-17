@@ -135,7 +135,7 @@ EventStore::Tiny - A minimal event sourcing framework.
 
 =begin html
 
-<p>
+<p style="line-height: 190%">
 
 <a href="https://badge.fury.io/pl/EventStore-Tiny">
     <img alt="CPAN version" src="https://badge.fury.io/pl/EventStore-Tiny.svg"></a>
