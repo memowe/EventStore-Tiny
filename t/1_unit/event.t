@@ -45,9 +45,11 @@ subtest 'Defaults' => sub {
     };
 
     subtest 'Summary' => sub {
-        my $s = EventStore::Tiny::Event->new(name => 'foo')->summary;
-        ok defined $s, 'Summary is defined';
-        like $s => qr/^\[
+        my $e = EventStore::Tiny::Event->new(name => 'foo');
+        ok defined $e->summary, 'Summary is defined';
+
+        # Summary matcher
+        my $summary_rx = qr/^\[
             foo                     # Name
             \s \(
                 \d\d\d\d-\d\d-\d\d  # Date
@@ -55,7 +57,18 @@ subtest 'Defaults' => sub {
                 \d\d:\d\d:\d\d      # Time
                 (\.\d+)?            # Optional: high res time
             \)
-        \]$/x, 'Correct summary';
+        \]$/x;
+
+        # Match with high-res timestamp
+        like $e->summary => $summary_rx, 'Correct summary';
+        $e->summary =~ $summary_rx;
+        ok defined $1, 'Decimals represented in summary';
+
+        # Strip decimals
+        $e->timestamp(42);
+        like $e->summary => $summary_rx, 'Correct summary';
+        $e->summary =~ $summary_rx;
+        ok not(defined $1), 'No decimals represented in summary';
     };
 };
 
