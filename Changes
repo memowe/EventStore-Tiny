@@ -1,3 +1,6 @@
+0.41    2018-08-06
+    - Add a summary method to event classes
+
 0.4     2018-07-17
     - Rename the cache_size attribute to cache_distance
 
