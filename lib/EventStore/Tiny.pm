@@ -135,7 +135,7 @@ EventStore::Tiny - A minimal event sourcing framework.
 
 =begin html
 
-<p style="line-height: 190%">
+<p>
 
 <a href="https://badge.fury.io/pl/EventStore-Tiny">
     <img alt="CPAN version" src="https://badge.fury.io/pl/EventStore-Tiny.svg"></a>
@@ -148,7 +148,7 @@ EventStore::Tiny - A minimal event sourcing framework.
 <a href="http://cpants.cpanauthors.org/dist/EventStore-Tiny">
     <img alt="CPANTS kwalitee score" src="https://cpants.cpanauthors.org/dist/EventStore-Tiny.png"></a>
 
-<br>
+<br><br>
 
 <a href="http://www.cpantesters.org/distro/E/EventStore-Tiny.html?distmat=1">
     <img alt="CPAN testers reports" src="https://img.shields.io/badge/testers-reports-blue.svg"></a>
