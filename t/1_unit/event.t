@@ -43,6 +43,20 @@ subtest 'Defaults' => sub {
         is ref($tr) => 'CODE', 'ISA subref';
         is $tr->($_), undef, 'Does nothing';
     };
+
+    subtest 'Summary' => sub {
+        my $s = EventStore::Tiny::Event->new(name => 'foo')->summary;
+        ok defined $s, 'Summary is defined';
+        like $s => qr/^\[
+            foo                     # Name
+            \s \(
+                \d\d\d\d-\d\d-\d\d  # Date
+                T                   # ISO 8601 separator
+                \d\d:\d\d:\d\d      # Time
+                (\.\d+)?            # Optional: high res time
+            \)
+        \]$/x, 'Correct summary';
+    };
 };
 
 subtest 'Construction arguments' => sub {
@@ -98,6 +112,42 @@ subtest 'Data event' => sub {
 
     # apply to empty state
     is $ev->apply_to({})->{quux} => 42, 'Correct state-update from data';
+
+    subtest 'Summarizing summary' => sub {
+
+        # Extended summary regex
+        my $summary_rx = qr/^\[
+            foo                     # Name
+            \s \(
+                \d\d\d\d-\d\d-\d\d  # Date
+                T                   # ISO 8601 separator
+                \d\d:\d\d:\d\d      # Time
+                (?:\.\d+)?          # Optional: high res time
+            \)
+            \s \| \s
+            (.*)                    # Data representation
+        \]$/x;
+
+        # Prepare expected results
+        my %expected = (
+            'quux'                      => 'quux',
+            "A    \nB\n\n\nC     D\n"   => 'A B C D',
+            '123456789012345678'        => '123456789012345678',
+            '1234567890123456789'       => '1234567890123456789',
+            '12345678901234567890'      => '12345678901234567...',
+            '123456789012345678901'     => '12345678901234567...',
+            "12345678901\n4'6' ABCDEF"  => '12345678901 46 AB...',
+        );
+
+        # Check
+        for my $ed (sort keys %expected) {
+            $ev->data->{key} = $ed;
+            like $ev->summary => $summary_rx, 'Correct extended summary';
+            $ev->summary =~ $summary_rx;
+            is $1 => "key: '$expected{$ed}'",
+                "Correct data summary $expected{$ed}";
+        }
+    };
 };
 
 subtest 'Specialization' => sub {

@@ -38,6 +38,18 @@ sub apply_to {
     return $state;
 }
 
+# Return a one-line summary of this event
+sub summary {
+    my $self = shift;
+    my $decimals    = $self->timestamp =~ /(\.\d+)$/ ? $1 : '';
+    my @time_parts  = localtime $self->timestamp;
+    return sprintf '[%s (%4d-%02d-%02dT%02d:%02d:%02d%s)]',
+        $self->name,
+        $time_parts[5] + 1900,      # Year
+        @time_parts[4, 3, 2, 1, 0], # Rest of time representation
+        $decimals;                  # Possibly empty
+}
+
 1;
 
 =pod
@@ -81,6 +93,12 @@ This event's state transformation function, represented by a subref. By default 
     $event->apply_to(\%state, $logger);
 
 Applies this event's L<transformation> to the given state (by side-effect). If a C<$logger> as a subref is given, it is used to log this application.
+
+=head3 summary
+
+    say $event->summary;
+
+Returns a one-line summarized stringification of this event.
 
 =head1 SEE ALSO
 

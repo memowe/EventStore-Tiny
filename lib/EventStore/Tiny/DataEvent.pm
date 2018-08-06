@@ -33,6 +33,29 @@ sub apply_to {
     return $state;
 }
 
+# Return a one-line summary of this event
+sub summary {
+    my $self = shift;
+
+    # Prepare data summary
+    my $data_summary = join ', ' => map {
+        my $d = $self->data->{$_};
+        $d =~ s/\s+/ /g;    # Summarize in-between whitespace
+        $d =~ s/^\s+//;     # Get rid of leading whitespace
+        $d =~ s/\s+$//;     # Get rid of whitespace in the end
+        $d =~ s/['"]+//g;   # Get rid of quotes
+        $d =~ s/^(.{17}).{3,}/$1.../; # Shorten
+        "$_: '$d'"          # Quoted, shortened key-value pair
+    } sort keys %{$self->data};
+
+    # Retrieve event summary (without data) and inject data summary
+    my $summary = $self->SUPER::summary;
+    $summary =~ s/\)\]$/) | $data_summary]/;
+
+    # Done
+    return $summary;
+}
+
 1;
 
 =pod
@@ -66,6 +89,12 @@ Creates a new data event based on another event (usually representing an L<Event
     $event->apply_to(\%state, $logger);
 
 Applies this event's L<transformation> to the given state (by side-effect) and its L</data>. If a C<$logger> as a subref is given, it is used to log this application.
+
+=head3 summary
+
+    say $event->summary;
+
+Extended version of L<EventStory::Tiny::Event/summary> from the parent. It features a simple L</data> summary.
 
 =head1 SEE ALSO
 
