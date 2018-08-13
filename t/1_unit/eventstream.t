@@ -10,7 +10,7 @@ use_ok 'EventStore::Tiny::EventStream';
 
 my @test_numbers = (17, 25, 42);
 
-# prepare events that add 17 or 25 or 42 to a state's "key" entry:
+# Prepare events that add 17 or 25 or 42 to a state's "key" entry:
 sub _test_events {
     return [map {
         my $add = $_;
@@ -22,14 +22,14 @@ sub _test_events {
 
 subtest 'Events at construction time' => sub {
 
-    # prepare test event storage
+    # Prepare test event storage
     my $tes = _test_events;
 
-    # construct event stream with an array of events
+    # Construct event stream with an array of events
     my $es = EventStore::Tiny::EventStream->new(events => $tes);
     is $es->size => scalar(@test_numbers), 'Right event count';
 
-    # test event list members by applying
+    # Test event list members by applying
     for my $i (0 .. $#test_numbers) {
         is $es->events->[$i]->apply_to({})->{key} => $test_numbers[$i],
             "Correct transformation: $test_numbers[$i]";
@@ -38,16 +38,16 @@ subtest 'Events at construction time' => sub {
 
 subtest 'Timestamp limits' => sub {
 
-    # prepare empty stream
+    # Prepare empty stream
     my $es = EventStore::Tiny::EventStream->new;
     is $es->first_timestamp => undef, 'First timestamp undefined';
     is $es->last_timestamp => undef, 'Last timestamp undefined';
 
-    # add events
+    # Add events
     my $tes = _test_events;
     $es->events($tes);
 
-    # check limit timestamps
+    # Check limit timestamps
     is $es->first_timestamp => $tes->[0]->timestamp,
         'Correct first timestamp';
     is $es->last_timestamp => $tes->[$#$tes]->timestamp,
@@ -56,15 +56,15 @@ subtest 'Timestamp limits' => sub {
 
 subtest 'Appending events' => sub {
 
-    # construct an empty event stream
+    # Construct an empty event stream
     my $es = EventStore::Tiny::EventStream->new;
     is $es->size => 0, 'Right event count';
 
-    # add events
+    # Add events
     $es->add_event($_) for @{+_test_events};
     is $es->size => scalar(@test_numbers), 'Right event count';
 
-    # test event list members by applying
+    # Test event list members by applying
     for my $i (0 .. $#test_numbers) {
         is $es->events->[$i]->apply_to({})->{key} => $test_numbers[$i],
             "Correct transformation: $test_numbers[$i]";
@@ -73,16 +73,16 @@ subtest 'Appending events' => sub {
 
 subtest 'Application' => sub {
 
-    # construct event stream with an array of events
+    # Construct event stream with an array of events
     my $es = EventStore::Tiny::EventStream->new(events => _test_events);
 
     subtest 'State given' => sub {
 
-        # prepare a test state to be modified
+        # Prepare a test state to be modified
         my $init_foo    = 666;
         my $state       = {key => $init_foo};
 
-        # apply all events and check result
+        # Apply all events and check result
         $es->apply_to($state);
         is $state->{key} => sum($init_foo, @test_numbers),
             'Correct chained application of all events';
@@ -96,7 +96,7 @@ subtest 'Application' => sub {
 
 subtest 'Extract substream' => sub {
 
-    # construct event stream with an array of events
+    # Construct event stream with an array of events
     my $es = EventStore::Tiny::EventStream->new(events => _test_events);
 
     subtest 'Default' => sub {
@@ -119,7 +119,7 @@ subtest 'Extract substream' => sub {
         isa_ok $first => 'EventStore::Tiny::EventStream';
         is $first->size => 1, 'Only one event left';
 
-        # check if it's the first
+        # Check if it's the first
         is $first->apply_to->{key} => $test_numbers[0], 'Got the first event';
     };
 
@@ -134,7 +134,7 @@ subtest 'Extract substream' => sub {
 
 subtest 'Time substreams' => sub {
 
-    # prepare events
+    # Prepare events
     my $events  = _test_events;
     my $sep_ts  = $events->[0]->timestamp;
     my $es      = EventStore::Tiny::EventStream->new(events => $events);
