@@ -134,25 +134,53 @@ subtest 'Extract substream' => sub {
 
 subtest 'Time substreams' => sub {
 
-    # Prepare events
+    # Prepare a separation timestamp
     my $events  = _test_events;
     my $sep_ts  = $events->[0]->timestamp;
     my $es      = EventStore::Tiny::EventStream->new(events => $events);
 
     subtest 'Events before' => sub {
-        my $es_first = $es->before($sep_ts);
-        isa_ok $es_first => 'EventStore::Tiny::EventStream';
-        is $es_first->size => 1, 'Correct substream size';
-        is $es_first->apply_to->{key} => $test_numbers[0],
-            'Correct event';
+
+        subtest 'Empty stream' => sub {
+            my $empty_es = EventStore::Tiny::EventStream->new;
+            is $empty_es->before(9**9**9)->size => 0, 'Empty result';
+        };
+
+        subtest 'Timestamp earlier than first timestamp' => sub {
+            my $earlier_ts = $es->first_timestamp - 42;
+            is $es->before($earlier_ts)->size => 0, 'Empty result';
+        };
+
+        subtest 'Timestamp is the last timestamp' => sub {
+            is $es->before($es->last_timestamp) => $es, 'Same stream';
+        };
+
+        subtest 'Real substream' => sub {
+            my $es_first = $es->before($sep_ts);
+            is $es_first->size => 1, 'Correct substream size';
+            is $es_first->apply_to->{key} => $test_numbers[0],
+                'Correct event';
+        };
     };
 
     subtest 'Events after' => sub {
-        my $es_rest = $es->after($sep_ts);
-        isa_ok $es_rest => 'EventStore::Tiny::EventStream';
-        is $es_rest->size => 2, 'Correct substream size';
-        is $es_rest->apply_to->{key} => sum(@test_numbers[1,2]),
-            'Correct events';
+
+        subtest 'Empty stream' => sub {
+            my $empty_es = EventStore::Tiny::EventStream->new;
+            is $empty_es->after(-9**9**9)->size => 0, 'Empty result';
+        };
+
+        subtest 'Timestamp later than the last timestamp' => sub {
+            my $later_ts = $es->last_timestamp + 42;
+            is $es->after($later_ts)->size => 0, 'Empty result';
+        };
+
+        subtest 'Real substream' => sub {
+            my $es_rest = $es->after($sep_ts);
+            is $es_rest->size => 2, 'Correct substream size';
+            is $es_rest->apply_to->{key} => sum(@test_numbers[1,2]),
+                'Correct events';
+        };
     };
 };
 
