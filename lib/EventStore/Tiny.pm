@@ -77,6 +77,14 @@ sub init_state {
     return clone($self->init_data);
 }
 
+sub init_cache {
+    my $self = shift;
+    return if not defined $self->cache_distance
+        or defined $self->_cached_snapshot;
+    $self->snapshot->state;
+    return 1;
+}
+
 sub snapshot {
     my ($self, $timestamp) = @_;
     my $state = $self->init_state;
@@ -232,6 +240,10 @@ Standard constructor. Understands all attributes as arguments. For most use case
 =item init_data
 
 A hashref representing the initial state. B<Default: C<{}>>
+
+=item init_cache
+
+When this method is called, the cache will be filled.
 
 =item cache_distance
 

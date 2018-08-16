@@ -21,6 +21,11 @@ subtest "Cache size: $cs" => sub {
     my $init_ec = $cs + 10;
     $est->store_event('EventApplied') for 1 .. $init_ec;
 
+    # Fill the cache for the first time
+    ok ! defined $est->_cached_snapshot, 'Cached snapshot empty before';
+    $est->init_cache;
+    ok defined($est->_cached_snapshot), 'Cached snapshot now exists';
+
     # Snapshot: events applied
     is $est->snapshot->state->{x} => $init_ec, 'Correct state';
     is $ea_count => $init_ec, "$init_ec event applications";
@@ -59,6 +64,10 @@ subtest 'Caching disabled' => sub {
     $est->events->events([]);
     $est->_cached_snapshot(undef);
     $est->cache_distance(undef);
+
+    # Cache initialization does nothing
+    is $est->init_cache => undef, 'init_cache unsuccessuful';
+    is $est->_cached_snapshot => undef, 'No snapshot cached';
 
     # Add some events
     my $ec = 17;
