@@ -63,15 +63,29 @@ sub substream {
 sub before {
     my ($self, $timestamp) = @_;
 
-    # All events until the given timestamp (including)
-    return $self->substream(sub {$_->timestamp <= $timestamp});
+    # Shorthand: timestamp is our last timestamp
+    return $self if $timestamp == $self->last_timestamp;
+
+    # Go left until the condition is true, then it's true for all earlier events
+    my $i = $#{$self->events};
+    $i-- while $self->events->[$i]->timestamp > $timestamp;
+
+    # Create a new sliced event stream
+    my @before_events = @{$self->events}[0 .. $i];
+    return EventStore::Tiny::EventStream->new(events => \@before_events);
 }
 
 sub after {
     my ($self, $timestamp) = @_;
+    # No shorthand here as after matches after, but not equal!
 
-    # All events after the given timestamp (excluding)
-    return $self->substream(sub {$_->timestamp > $timestamp});
+    # Go right until the condition is true, then it's true for all later events
+    my $i = 0;
+    $i++ while $self->events->[$i]->timestamp <= $timestamp;
+
+    # Create a new sliced event stream
+    my @after_events = @{$self->events}[$i .. $#{$self->events}];
+    return EventStore::Tiny::EventStream->new(events => \@after_events);
 }
 
 1;
