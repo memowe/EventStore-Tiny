@@ -63,6 +63,13 @@ sub substream {
 sub before {
     my ($self, $timestamp) = @_;
 
+    # Shorthand: stream is empty
+    return $self if $self->size == 0;
+
+    # Shorthand: timestamp is earlier than our first timestamp
+    return EventStore::Tiny::EventStream->new
+        if $self->first_timestamp > $timestamp;
+
     # Shorthand: timestamp is our last timestamp
     return $self if $timestamp == $self->last_timestamp;
 
@@ -77,7 +84,13 @@ sub before {
 
 sub after {
     my ($self, $timestamp) = @_;
-    # No shorthand here as after matches after, but not equal!
+
+    # Shorthand: stream is empty
+    return $self if $self->size == 0;
+
+    # Shorthand: timestamp is later or equal to our last timestamp
+    return EventStore::Tiny::EventStream->new
+        if $self->last_timestamp <= $timestamp;
 
     # Go right until the condition is true, then it's true for all later events
     my $i = 0;
