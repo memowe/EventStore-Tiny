@@ -3,6 +3,8 @@ package EventStore::Tiny::EventStream;
 use strict;
 use warnings;
 
+use Time::HiRes 'time';
+
 use Class::Tiny {
     events => sub {[]},
 };
@@ -35,13 +37,40 @@ sub last_timestamp {
 }
 
 sub apply_to {
-    my ($self, $state, $logger) = @_;
+    my ($self, $state, $logger, $progress_meter) = @_;
 
     # Start with empty state by default
     $state = {} unless defined $state;
 
+    # Prepare progress meter
+    my $last_index  = -9**9**9; # "negative infinity"
+    my $last_time   = -9**9**9;
+
     # Apply all events
-    $_->apply_to($state, $logger) for @{$self->events};
+    for my $i (0 .. $#{$self->events}) {
+        my $event = $self->events->[$i];
+
+        # Apply
+        $event->apply_to($state, $logger);
+
+        # No progress meter: done
+        next unless defined $progress_meter;
+
+        # Report every n events/seconds
+        my $pm_events   = $progress_meter->events_per_step;
+        my $pm_seconds  = $progress_meter->seconds_per_step;
+        if ((defined($pm_events)  and ($i - $last_index)  >= $pm_events)
+                or
+            (defined($pm_seconds) and (time - $last_time) >= $pm_seconds)) {
+
+            # Report
+            $progress_meter->report_progress->($self->size, $i + 1);
+
+            # Remember this step
+            $last_index = $i;
+            $last_time  = time;
+        }
+    }
 
     # Done
     return $state;

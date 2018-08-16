@@ -6,8 +6,18 @@ use warnings;
 use Class::Tiny {
     events_per_step     => undef,
     seconds_per_step    => undef,
-    report_progress     => sub {die "report_progress required\n"},
+    report_progress     => sub {die "report_progress is required\n"},
 };
+
+sub BUILD {
+    my $self = shift;
+
+    # Check non-lazy
+    $self->report_progress;
+
+    # Return nothing (will be ignored anyway)
+    return;
+}
 
 1;
 

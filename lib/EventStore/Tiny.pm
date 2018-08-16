@@ -26,7 +26,9 @@ use Class::Tiny {
     init_data       => sub {{}},
     logger          => sub {EventStore::Tiny::Logger->log_cb},
     cache_distance  => 0, # Default: store snapshot each time. no caching: undef
-}, '_cached_snapshot';
+    progress_meter  => undef,
+    _cached_snapshot => undef,
+};
 
 # Class method to construct
 sub new_from_file {
@@ -101,9 +103,10 @@ sub snapshot {
     }
 
     # Calculate snapshot
+    my $new_state = $es->apply_to($state, $self->logger, $self->progress_meter);
     my $snapshot = EventStore::Tiny::Snapshot->new(
-        state       => $es->apply_to($state, $self->logger),
         timestamp   => $es->last_timestamp // 0,
+        state       => $new_state,
     );
 
     # Caching disabled: done
@@ -252,6 +255,10 @@ The number of events after a new snapshot is cached for accellerated access. 0 m
 =item logger
 
 A subref (callback) which will be called each time an event is applied to the state. The callback gets this event as its only argument. B<Default: L<EventStore::Tiny::Logger/log_cb>>
+
+=item progress_meter
+
+An object of the class L<EventStore::Tiny::ProgressMeter> which defines a callback that is used to report the progress during cache initialization (typically on system startup). B<Default: C<undef>>
 
 =back
 
