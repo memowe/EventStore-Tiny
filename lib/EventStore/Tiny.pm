@@ -25,6 +25,7 @@ use Class::Tiny {
                              logger => shift->logger)},
     init_data       => sub {{}},
     logger          => sub {EventStore::Tiny::Logger->log_cb},
+    slack           => 0, # Default: strict mode
     cache_distance  => 0, # Default: store snapshot each time. no caching: undef
 }, '_cached_snapshot';
 
@@ -94,12 +95,14 @@ sub snapshot {
 
         # Nothing? Great!
         return EventStore::Tiny::Snapshot->new(
-            state       => clone($self->_cached_snapshot->state),
             timestamp   => $self->_cached_snapshot->timestamp,
+            state       => $self->slack ?
+                $self->_cached_snapshot->state
+                : clone($self->_cached_snapshot->state),
         ) if $es->size == 0;
 
         # Still something? Start here
-        $state = clone $cached_sn->state;
+        $state = $self->slack ? $cached_sn : clone $cached_sn->state;
     }
 
     # Calculate snapshot
