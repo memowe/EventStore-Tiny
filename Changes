@@ -1,3 +1,6 @@
+0.51    2018-08-24
+    - No relevant changes, but a version bump was neccessary because I broke my MANIFEST file. Sorry! :-)
+
 0.5     2018-08-20
     - Introduce slack mode (state consistency vulnerable but fast!)
 
