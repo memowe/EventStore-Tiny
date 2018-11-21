@@ -5,6 +5,7 @@ use Test::More;
 
 use List::Util qw(sum);
 use EventStore::Tiny::Event;
+use EventStore::Tiny::TransformationStore;
 
 use_ok 'EventStore::Tiny::EventStream';
 
