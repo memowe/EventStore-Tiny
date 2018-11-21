@@ -9,7 +9,8 @@ use Class::Tiny {
 
 sub names {
     my $self = shift;
-    return sort keys %{$self->_transformation};
+    my @sorted_names = sort keys %{$self->_transformation};
+    return @sorted_names; # return sort is undefined in scalar context
 }
 
 sub get {
