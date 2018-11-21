@@ -5,7 +5,6 @@ use Test::More;
 
 use EventStore::Tiny;
 use File::Temp qw(tmpnam);
-use Storable;
 
 # Prepare a test event store
 my $es = EventStore::Tiny->new(logger => undef);
