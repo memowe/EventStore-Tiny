@@ -13,9 +13,9 @@ sub new_from_template {
 
     # "clone"
     return EventStore::Tiny::DataEvent->new(
-        name            => $event->name,
-        transformation  => $event->transformation,
-        data            => $data,
+        name        => $event->name,
+        trans_store => $event->trans_store,
+        data        => $data,
     );
 }
 
@@ -23,8 +23,13 @@ sub new_from_template {
 sub apply_to {
     my ($self, $state, $logger) = @_;
 
+    # Transformation lookup
+    my $name = $self->name;
+    my $transformation = $self->trans_store->get($name);
+    die "Transformation for $name not found!\n" unless $transformation;
+
     # Apply the transformation by side effect
-    $self->transformation->($state, $self->data);
+    $transformation->($state, $self->data);
 
     # Log this event, if logger present
     $logger->($self) if defined $logger;

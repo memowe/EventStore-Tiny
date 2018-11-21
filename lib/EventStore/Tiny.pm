@@ -6,6 +6,7 @@ use warnings;
 use EventStore::Tiny::Logger;
 use EventStore::Tiny::Event;
 use EventStore::Tiny::DataEvent;
+use EventStore::Tiny::TransformationStore;
 use EventStore::Tiny::EventStream;
 use EventStore::Tiny::Snapshot;
 
@@ -23,6 +24,7 @@ use Class::Tiny {
     registry        => sub {{}},
     events          => sub {EventStore::Tiny::EventStream->new(
                              logger => shift->logger)},
+    trans_store     => sub {EventStore::Tiny::TransformationStore->new},
     init_data       => sub {{}},
     logger          => sub {EventStore::Tiny::Logger->log_cb},
     slack           => 0, # Default: strict mode
@@ -43,10 +45,13 @@ sub store_to_file {
 sub register_event {
     my ($self, $name, $transformation) = @_;
 
+    # Register transformation
+    $self->trans_store->set($name => $transformation);
+
     return $self->registry->{$name} = EventStore::Tiny::Event->new(
-        name            => $name,
-        transformation  => $transformation,
-        logger          => $self->logger,
+        name        => $name,
+        trans_store => $self->trans_store,
+        logger      => $self->logger,
     );
 }
 

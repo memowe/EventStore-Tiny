@@ -7,18 +7,19 @@ use UUID::Tiny qw(create_uuid_as_string);
 use Time::HiRes qw(time);
 
 use Class::Tiny {
-    uuid            => sub {create_uuid_as_string},
-    timestamp       => sub {time},
-    name            => sub {die "name is required.\n"},
-    transformation  => sub {sub {}},
+    uuid        => sub {create_uuid_as_string},
+    timestamp   => sub {time},
+    name        => sub {die "name is required.\n"},
+    trans_store => sub {die "trans_store is required."},
 };
 
 sub BUILD {
     my $self = shift;
 
-    # Set non-lazy
+    # Set/Test non-lazy
     $self->name;
     $self->timestamp;
+    $self->trans_store;
 
     # Return nothing (will be ignored anyway)
     return;
@@ -28,8 +29,13 @@ sub BUILD {
 sub apply_to {
     my ($self, $state, $logger) = @_;
 
+    # Transformation lookup
+    my $name = $self->name;
+    my $transformation = $self->trans_store->get($name);
+    die "Transformation for $name not found!\n" unless $transformation;
+
     # Apply the transformation by side effect
-    $self->transformation->($state);
+    $transformation->($state);
 
     # Log this event, if logger present
     $logger->($self) if defined $logger;
