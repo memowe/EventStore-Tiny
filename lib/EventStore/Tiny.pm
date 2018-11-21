@@ -18,7 +18,7 @@ use Data::Compare; # Exports Compare()
 $Storable::Deparse  = 1;
 $Storable::Eval     = 1;
 
-our $VERSION = '0.51';
+our $VERSION = '0.6';
 
 use Class::Tiny {
     registry        => sub {{}},

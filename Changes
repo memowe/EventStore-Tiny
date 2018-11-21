@@ -1,3 +1,6 @@
+0.6     ????-??-??
+    - Use a transformation store build on startup time instead of serializing subroutines
+
 0.51    2018-08-24
     - No relevant changes, but a version bump was neccessary because I broke my MANIFEST file. Sorry! :-)
 
