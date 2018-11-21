@@ -3,6 +3,8 @@ use warnings;
 
 use Test::More;
 
+use EventStore::Tiny::TransformationStore;
+
 use_ok 'EventStore::Tiny::Event';
 use_ok 'EventStore::Tiny::DataEvent';
 
@@ -11,25 +13,37 @@ subtest 'Defaults' => sub {
     subtest 'UUID' => sub {
 
         # Init and check UUID
-        my $ev = EventStore::Tiny::Event->new(name => 'foo');
+        my $ev = EventStore::Tiny::Event->new(
+            name        => 'foo',
+            trans_store => EventStore::Tiny::TransformationStore->new,
+        );
         ok defined $ev->uuid, 'Event has an UUID';
         like $ev->uuid => qr/^(\w+-){4}\w+$/, 'UUID looks like an UUID string';
 
         # Check another event's UUID
-        my $ev2 = EventStore::Tiny::Event->new(name => 'foo');
+        my $ev2 = EventStore::Tiny::Event->new(
+            name        => 'foo',
+            trans_store => EventStore::Tiny::TransformationStore->new,
+        );
         isnt $ev->uuid => $ev2->uuid, 'Two different UUIDs';
     };
 
     subtest 'High-resolution timestamp' => sub {
 
         # Init and check timestamp
-        my $ev = EventStore::Tiny::Event->new(name => 'foo');
+        my $ev = EventStore::Tiny::Event->new(
+            name        => 'foo',
+            trans_store => EventStore::Tiny::TransformationStore->new,
+        );
         ok defined $ev->timestamp, 'Event has a timestamp';
         like $ev->timestamp => qr/^\d+\.\d+$/, 'Timestamp looks like a decimal';
         isnt $ev->timestamp => time, 'Timestamp is not the integer timestamp';
 
         # Check another event's timestamp
-        my $ev2 = EventStore::Tiny::Event->new(name => 'foo');
+        my $ev2 = EventStore::Tiny::Event->new(
+            name        => 'foo',
+            trans_store => EventStore::Tiny::TransformationStore->new,
+        );
         isnt $ev->timestamp => $ev2->timestamp, 'Time has passed.';
     };
 
@@ -38,14 +52,17 @@ subtest 'Defaults' => sub {
         like $@ => qr/name is required/, 'Name is required';
     };
 
-    subtest 'Transformation' => sub {
-        my $tr = EventStore::Tiny::Event->new(name => 'foo')->transformation;
-        is ref($tr) => 'CODE', 'ISA subref';
-        is $tr->($_), undef, 'Does nothing';
+    subtest 'Transformation Store' => sub {
+        eval {EventStore::Tiny::Event->new(name => 'foo')};
+        like $@ => qr/trans_store is required/,
+            'Transformation store is required';
     };
 
     subtest 'Summary' => sub {
-        my $e = EventStore::Tiny::Event->new(name => 'foo');
+        my $e = EventStore::Tiny::Event->new(
+            name        => 'foo',
+            trans_store => EventStore::Tiny::TransformationStore->new,
+        );
         ok defined $e->summary, 'Summary is defined';
 
         # Summary matcher
@@ -72,55 +89,67 @@ subtest 'Defaults' => sub {
     };
 };
 
-subtest 'Construction arguments' => sub {
-
-    # Construct
-    my $ev = EventStore::Tiny::Event->new(
-        name            => 'foo',
-        transformation  => sub {25 + shift},
-    );
-
-    # Check
-    is $ev->name => 'foo', 'Correct name';
-    is $ev->transformation->(17) => 42, 'Correct transformation';
-};
-
 subtest 'Application' => sub {
 
-    # Create event
+    # Prepare
     my $ev = EventStore::Tiny::Event->new(
-        name            => 'bar',
-        transformation  => sub {
+        name        => 'Foo',
+        trans_store => EventStore::Tiny::TransformationStore->new,
+    );
+    my $dev = EventStore::Tiny::Event->new(
+        name        => 'Bar',
+        trans_store => EventStore::Tiny::TransformationStore->new,
+    );
+
+    subtest 'Transformation not found' => sub {
+        eval {$ev->apply_to({}); fail "Didn't die"};
+        like $@ => qr/Transformation for Foo not found/, 'Correct exception';
+        eval {$dev->apply_to({}); fail "Didn't die"};
+        like $@ => qr/Transformation for Bar not found/, 'Correct exception';
+    };
+
+    subtest 'Regular application' => sub {
+
+        # Inject transformation
+        $ev->trans_store->set(Foo => sub {
             my $state = shift;
             $state->{quux} += 25;
             return 666; # return value makes no sense
-        },
-    );
+        });
 
-    # Prepare state for application
-    my $state = {};
-    $state->{quux} = 17;
+        # Prepare state for application
+        my $state = {};
+        $state->{quux} = 17;
 
-    # Apply
-    my $ret_val = $ev->apply_to($state);
-    is $state->{quux} => 42, 'Correct modified state';
-    is $ret_val => $state, 'Return state is the same as given state';
+        # Apply
+        my $ret_val = $ev->apply_to($state);
+        is $state->{quux} => 42, 'Correct modified state';
+        is $ret_val => $state, 'Return state is the same as given state';
+    };
 };
 
 subtest 'Data event' => sub {
 
-    # Check defaults
-    my $ev = EventStore::Tiny::DataEvent->new(name => 'quux');
-    is_deeply $ev->data => {}, 'Default data is an empty hash';
+    # Prepare
+    my $ts = EventStore::Tiny::TransformationStore->new;
+    $ts->set(foo => sub {
+        my ($state, $data) = @_;
+        $state->{$data->{key}} = 42;
+    });
+
+    subtest 'Default data' => sub {
+        my $e = EventStore::Tiny::DataEvent->new(
+            name        => 'foo',
+            trans_store => $ts,
+        );
+        is_deeply $e->data => {}, 'Default data is an empty hash';
+    };
 
     # Construct data-driven event
-    $ev = EventStore::Tiny::DataEvent->new(
-        name            => 'foo',
-        transformation  => sub {
-            my ($state, $data) = @_;
-            $state->{$data->{key}} = 42;
-        },
-        data            => {key => 'quux'},
+    my $ev = EventStore::Tiny::DataEvent->new(
+        name        => 'foo',
+        trans_store => $ts,
+        data        => {key => 'quux'},
     );
 
     # Apply to empty state
@@ -166,19 +195,21 @@ subtest 'Data event' => sub {
 subtest 'Specialization' => sub {
 
     # Construct data-driven event
+    my $ts = EventStore::Tiny::TransformationStore->new;
+    $ts->set(foo => sub {
+        my ($state, $data) = @_;
+        $state->{$data->{key}} = 42;
+    });
     my $ev = EventStore::Tiny::Event->new(
-        name            => 'foo',
-        transformation  => sub {
-            my ($state, $data) = @_;
-            $state->{$data->{key}} = 42;
-        },
+        name        => 'foo',
+        trans_store => $ts,
     );
 
     # Specialize
     my $de = EventStore::Tiny::DataEvent->new_from_template(
         $ev, {key => 'quux'}
     );
-    isa_ok $de => 'EventStore::Tiny::DataEvent';
+    isa_ok $de => 'EventStore::Tiny::Event';
 
     # Apply to empty state
     is $de->apply_to({})->{quux} => 42, 'Correct state-update from new data';

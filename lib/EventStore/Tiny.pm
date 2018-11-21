@@ -6,6 +6,7 @@ use warnings;
 use EventStore::Tiny::Logger;
 use EventStore::Tiny::Event;
 use EventStore::Tiny::DataEvent;
+use EventStore::Tiny::TransformationStore;
 use EventStore::Tiny::EventStream;
 use EventStore::Tiny::Snapshot;
 
@@ -23,6 +24,7 @@ use Class::Tiny {
     registry        => sub {{}},
     events          => sub {EventStore::Tiny::EventStream->new(
                              logger => shift->logger)},
+    trans_store     => sub {EventStore::Tiny::TransformationStore->new},
     init_data       => sub {{}},
     logger          => sub {EventStore::Tiny::Logger->log_cb},
     slack           => 0, # Default: strict mode
@@ -43,10 +45,13 @@ sub store_to_file {
 sub register_event {
     my ($self, $name, $transformation) = @_;
 
+    # Register transformation
+    $self->trans_store->set($name => $transformation);
+
     return $self->registry->{$name} = EventStore::Tiny::Event->new(
-        name            => $name,
-        transformation  => $transformation,
-        logger          => $self->logger,
+        name        => $name,
+        trans_store => $self->trans_store,
+        logger      => $self->logger,
     );
 }
 
@@ -319,6 +324,12 @@ Returns a hashref with event type names as keys and event types as values, which
     my $event_stream = $store->events;
 
 Returns the internal L<EventStore::Tiny::EventStream> object that stores all concrete events (L<EventStore::Tiny::DataEvent> instances). Should be manipulated by L</store_event> only. Events should never be changed or removed.
+
+=head3 trans_store
+
+    my $transformation_store = $store->trans_store
+
+Returns the internal L<EventStore::Tiny::TransformationStore> object that stores all transformation subroutines that events refer to. Should be manipulated by L</register_event> only. The transformation store should never be changed or removed.
 
 =head3 init_state
 

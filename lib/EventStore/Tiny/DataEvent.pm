@@ -13,9 +13,9 @@ sub new_from_template {
 
     # "clone"
     return EventStore::Tiny::DataEvent->new(
-        name            => $event->name,
-        transformation  => $event->transformation,
-        data            => $data,
+        name        => $event->name,
+        trans_store => $event->trans_store,
+        data        => $data,
     );
 }
 
