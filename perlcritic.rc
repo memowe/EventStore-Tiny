@@ -6,3 +6,6 @@ packages = Storable
 
 [-RegularExpressions::RequireExtendedFormatting]
 [-BuiltinFunctions::ProhibitComplexMappings]
+[-NamingConventions::ProhibitAmbiguousNames]
+[-Subroutines::RequireFinalReturn]
+[-ErrorHandling::RequireCarping]
