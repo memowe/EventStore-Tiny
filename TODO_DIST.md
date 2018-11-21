@@ -1,0 +1,5 @@
+- [ ] Changes
+- [ ] Credits (README.md and lib/EventStore/Tiny.pm)
+- [ ] Version (lib/EventStore/Tiny.pm)
+- [ ] make manifest
+- [ ] make distcheck
