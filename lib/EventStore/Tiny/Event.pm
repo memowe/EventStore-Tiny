@@ -74,7 +74,10 @@ EventStore::Tiny::Event implements the following attributes and methods.
 
 All these attributes can be manipulated by setters/getters with the attribute's name or can be set on construction:
 
-    my $event = EventStore::Tiny::Event->new(name => "Foo");
+    my $event = EventStore::Tiny::Event->new(
+        name        => 'Foo',
+        trans_store => $ts,
+    );
 
 =head3 uuid
 
@@ -88,9 +91,9 @@ This event's timestamp. By default a new timestamp of the creation time is set.
 
 This event's name. Setting this attribute on construction is required.
 
-=head3 transformation
+=head3 trans_store
 
-This event's state transformation function, represented by a subref. By default it does nothing, so it should be set as a reasonable subref changing the given state argument (as a hashref) based on the given data (as a hashref) by side-effect.
+The L<EventStore::Tiny::TransformationStore> object where this event's transformation subroutine will be looked up on application.
 
 =head2 METHODS
 

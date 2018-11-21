@@ -325,6 +325,12 @@ Returns a hashref with event type names as keys and event types as values, which
 
 Returns the internal L<EventStore::Tiny::EventStream> object that stores all concrete events (L<EventStore::Tiny::DataEvent> instances). Should be manipulated by L</store_event> only. Events should never be changed or removed.
 
+=head3 trans_store
+
+    my $transformation_store = $store->trans_store
+
+Returns the internal L<EventStore::Tiny::TransformationStore> object that stores all transformation subroutines that events refer to. Should be manipulated by L</register_event> only. The transformation store should never be changed or removed.
+
 =head3 init_state
 
     my $state = $store->init_state;
