@@ -25,17 +25,20 @@ sub BUILD {
     return;
 }
 
+sub transformation {
+    my $self = shift;
+    my $name = $self->name;
+    my $t    = $self->trans_store->get($name);
+    die "Transformation for $name not found!\n" unless defined $t;
+    return $t;
+}
+
 # Lets transformation work on state by side-effect
 sub apply_to {
     my ($self, $state, $logger) = @_;
 
-    # Transformation lookup
-    my $name = $self->name;
-    my $transformation = $self->trans_store->get($name);
-    die "Transformation for $name not found!\n" unless $transformation;
-
     # Apply the transformation by side effect
-    $transformation->($state);
+    $self->transformation->($state);
 
     # Log this event, if logger present
     $logger->($self) if defined $logger;
@@ -96,6 +99,12 @@ This event's name. Setting this attribute on construction is required.
 The L<EventStore::Tiny::TransformationStore> object where this event's transformation subroutine will be looked up on application.
 
 =head2 METHODS
+
+=head3 transformation
+
+    $event->transformation->($state);
+
+Returns the transformation subroutine as a coderef for this event.
 
 =head3 apply_to
 

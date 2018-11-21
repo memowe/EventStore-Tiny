@@ -23,13 +23,8 @@ sub new_from_template {
 sub apply_to {
     my ($self, $state, $logger) = @_;
 
-    # Transformation lookup
-    my $name = $self->name;
-    my $transformation = $self->trans_store->get($name);
-    die "Transformation for $name not found!\n" unless $transformation;
-
     # Apply the transformation by side effect
-    $transformation->($state, $self->data);
+    $self->transformation->($state, $self->data);
 
     # Log this event, if logger present
     $logger->($self) if defined $logger;
