@@ -68,7 +68,7 @@ EventStore::Tiny::DataEvent
 
 =head1 REFERENCE
 
-EventStore::Tiny::DataEvent extends EventStore::Tiny::Event and implements the following additional attributes and methods.
+EventStore::Tiny::DataEvent extends L<EventStore::Tiny::Event> and implements the following additional attributes and methods.
 
 =head2 data
 
