@@ -183,6 +183,8 @@ sub is_correct_snapshot {
 
 EventStore::Tiny - A minimal event sourcing framework.
 
+B<ATTENTION>: as of version 0.6 there is an API change regarding serialization which breaks existing applications that use serialization as well as their existing event stores.
+
 =begin html
 
 <p>
