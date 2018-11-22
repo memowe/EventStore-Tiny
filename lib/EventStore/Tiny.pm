@@ -299,17 +299,17 @@ A subref (callback) which will be called each time an event is applied to the st
 
 =back
 
-=head3 new_from_file
+=head3 import_events
 
-    my $store = EventStore::Tiny->new_from_file($filename);
+    $store->import_events($filename);
 
-Deserializes an existing store object which was L</store_to_file>d before.
+Loads events from a file which was written by L</export_events> before. It replaces an existing event stream in C<$store>. Note: before using the resulting events, the event types need to be registered as the transformations are only referenced.
 
-=head3 store_to_file
+=head3 export_events
 
-    $store->store_to_file($filename);
+    $store->export_events($filename);
 
-Serializes the store object to the file system. It can be deserialized via L</new_from_file> later.
+Serializes the event stream to the file system. It can be imported back via L</import_events> later.
 
 =head2 EVENT SOURCING WORKFLOW
 
