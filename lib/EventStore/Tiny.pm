@@ -11,12 +11,9 @@ use EventStore::Tiny::EventStream;
 use EventStore::Tiny::Snapshot;
 
 use Clone qw(clone);
-use Storable;
-use Data::Compare; # Exports Compare()
-
-# Enable handling of CODE refs (as event actions are code refs)
-$Storable::Deparse  = 1;
-$Storable::Eval     = 1;
+use IO::File;
+use YAML::Syck;     # Exports Dump(), Load()
+use Data::Compare;  # Exports Compare()
 
 our $VERSION = '0.6';
 
@@ -31,15 +28,49 @@ use Class::Tiny {
     cache_distance  => 0, # Default: store snapshot each time. no caching: undef
 }, '_cached_snapshot';
 
-# Class method to construct
-sub new_from_file {
-    my (undef, $fn) = @_;
-    return retrieve($fn);
+sub import_events {
+    my ($self, $fn) = @_;
+
+    # Rerieve
+    my $file    = IO::File->new($fn, 'r');
+    my $yaml    = do {local $/ = undef; <$file>};
+    my $events  = Load $yaml;
+    $file->close;
+
+    # Create
+    my $stream  = EventStore::Tiny::EventStream->new;
+    for my $data (@$events) {
+        $stream->add_event(EventStore::Tiny::DataEvent->new(
+            uuid        => $data->{uuid},
+            timestamp   => $data->{timestamp},
+            name        => $data->{name},
+            trans_store => $self->trans_store,
+            data        => $data->{data},
+        ));
+    }
+
+    # Done
+    $self->events($stream);
 }
 
-sub store_to_file {
+sub export_events {
     my ($self, $fn) = @_;
-    return store($self, $fn);
+
+    # Simplify
+    my @events = ();
+    for my $event (@{$self->events->events}) {
+        push @events, {
+            uuid        => $event->uuid,
+            timestamp   => $event->timestamp,
+            name        => $event->name,
+            data        => $event->data,
+         };
+    }
+
+    # Export
+    my $file = IO::File->new($fn, 'w');
+    print $file Dump(\@events);
+    $file->close;
 }
 
 sub register_event {
