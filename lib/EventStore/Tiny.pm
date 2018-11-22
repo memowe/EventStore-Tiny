@@ -11,12 +11,9 @@ use EventStore::Tiny::EventStream;
 use EventStore::Tiny::Snapshot;
 
 use Clone qw(clone);
-use Storable;
-use Data::Compare; # Exports Compare()
-
-# Enable handling of CODE refs (as event actions are code refs)
-$Storable::Deparse  = 1;
-$Storable::Eval     = 1;
+use IO::File;
+use YAML::Syck;     # Exports Dump(), Load()
+use Data::Compare;  # Exports Compare()
 
 our $VERSION = '0.6';
 
@@ -31,15 +28,49 @@ use Class::Tiny {
     cache_distance  => 0, # Default: store snapshot each time. no caching: undef
 }, '_cached_snapshot';
 
-# Class method to construct
-sub new_from_file {
-    my (undef, $fn) = @_;
-    return retrieve($fn);
+sub import_events {
+    my ($self, $fn) = @_;
+
+    # Rerieve
+    my $file    = IO::File->new($fn, 'r');
+    my $yaml    = do {local $/ = undef; <$file>};
+    my $events  = Load $yaml;
+    $file->close;
+
+    # Create
+    my $stream  = EventStore::Tiny::EventStream->new;
+    for my $data (@$events) {
+        $stream->add_event(EventStore::Tiny::DataEvent->new(
+            uuid        => $data->{uuid},
+            timestamp   => $data->{timestamp},
+            name        => $data->{name},
+            trans_store => $self->trans_store,
+            data        => $data->{data},
+        ));
+    }
+
+    # Done
+    $self->events($stream);
 }
 
-sub store_to_file {
+sub export_events {
     my ($self, $fn) = @_;
-    return store($self, $fn);
+
+    # Simplify
+    my @events = ();
+    for my $event (@{$self->events->events}) {
+        push @events, {
+            uuid        => $event->uuid,
+            timestamp   => $event->timestamp,
+            name        => $event->name,
+            data        => $event->data,
+         };
+    }
+
+    # Export
+    my $file = IO::File->new($fn, 'w');
+    print $file Dump(\@events);
+    $file->close;
 }
 
 sub register_event {
@@ -151,6 +182,8 @@ sub is_correct_snapshot {
 =head1 NAME
 
 EventStore::Tiny - A minimal event sourcing framework.
+
+B<ATTENTION>: as of version 0.6 there is an API change regarding serialization which breaks existing applications that use serialization as well as their existing event stores.
 
 =begin html
 
@@ -266,17 +299,17 @@ A subref (callback) which will be called each time an event is applied to the st
 
 =back
 
-=head3 new_from_file
+=head3 import_events
 
-    my $store = EventStore::Tiny->new_from_file($filename);
+    $store->import_events($filename);
 
-Deserializes an existing store object which was L</store_to_file>d before.
+Loads events from a file which was written by L</export_events> before. It replaces an existing event stream in C<$store>. Note: before using the resulting events, the event types need to be registered as the transformations are only referenced.
 
-=head3 store_to_file
+=head3 export_events
 
-    $store->store_to_file($filename);
+    $store->export_events($filename);
 
-Serializes the store object to the file system. It can be deserialized via L</new_from_file> later.
+Serializes the event stream to the file system. It can be imported back via L</import_events> later.
 
 =head2 EVENT SOURCING WORKFLOW
 

@@ -24,6 +24,7 @@ WriteMakefile(
         'Data::Compare' => '1.25',
         'Data::Dump'    => '1.23',
         'UUID::Tiny'    => '1.04',
+        'YAML::Syck'    => '1.31',
     },
     TEST_REQUIRES       => {
         'Test::Pod'             => '1.52',

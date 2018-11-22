@@ -1,4 +1,5 @@
 0.6     ????-??-??
+    - BREAKING CHANGE: Serialization API has changed and uses YAML instead of Storable
     - Use a transformation store build on startup time instead of serializing subroutines
 
 0.51    2018-08-24
