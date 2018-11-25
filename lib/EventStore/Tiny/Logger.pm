@@ -12,7 +12,7 @@ sub log_event {
 
     # Stringify
     use Data::Dump 'dump';
-    my $data    = $event->can('data') ? dump $event->data : 'NO DATA';
+    my $data    = keys(%{$event->data}) ? dump $event->data : 'NO DATA';
     my $output  = $event->name . ": $data";
 
     # Print to given print handle

@@ -5,7 +5,6 @@ use Test::More;
 use File::Temp qw(tempfile);
 
 use EventStore::Tiny;
-use EventStore::Tiny::DataEvent;
 use EventStore::Tiny::TransformationStore;
 
 # Prepare test "file handle"
@@ -38,7 +37,7 @@ subtest 'Default logger' => sub {
 
     # Log a dummy event
     subtest 'Dummy event' => sub {
-        $logger->log_event(EventStore::Tiny::DataEvent->new(
+        $logger->log_event(EventStore::Tiny::Event->new(
             name        => 'TestEventStored',
             trans_store => EventStore::Tiny::TransformationStore->new,
             data        => {a => 17, b => 42},
@@ -58,7 +57,7 @@ subtest 'Default logger' => sub {
             is ref($log_cb) => 'CODE', 'Subroutine reference generated';
 
             # Log a dummy event
-            $log_cb->(EventStore::Tiny::DataEvent->new(
+            $log_cb->(EventStore::Tiny::Event->new(
                 name        => 'TestEventStored',
                 trans_store => EventStore::Tiny::TransformationStore->new,
                 data        => {foo => 1, bar => 2},
@@ -79,7 +78,7 @@ subtest 'Default logger' => sub {
             );
 
             # Log a dummy event
-            $log_cb->(EventStore::Tiny::DataEvent->new(
+            $log_cb->(EventStore::Tiny::Event->new(
                 name        => 'TestEventStored',
                 trans_store => EventStore::Tiny::TransformationStore->new,
                 data        => {bar => 2, baz => 3},
@@ -103,7 +102,7 @@ subtest 'Default logger' => sub {
         my $logger = EventStore::Tiny::Logger->new;
 
         # Log a dummy event
-        $logger->log_event(EventStore::Tiny::DataEvent->new(
+        $logger->log_event(EventStore::Tiny::Event->new(
             name        => 'TestEventStored',
             trans_store => EventStore::Tiny::TransformationStore->new,
             data        => {baz => 17, quux => 42},
@@ -129,7 +128,7 @@ subtest 'Integration' => sub {
         # Prepare logger
         my $logger = EventStore::Tiny::Logger->new(print_target => $print_target);
 
-        subtest 'Event Type' => sub {
+        subtest 'Bare Event' => sub {
 
             # Prepare event
             my $ts = EventStore::Tiny::TransformationStore->new;
@@ -164,7 +163,7 @@ subtest 'Integration' => sub {
                 my ($state, $data) = @_;
                 $state->{foo} = 17 + $data->{add};
             });
-            my $event = EventStore::Tiny::DataEvent->new(
+            my $event = EventStore::Tiny::Event->new(
                 name        => 'Bar',
                 trans_store => $ts,
                 data        => {add => 2},
