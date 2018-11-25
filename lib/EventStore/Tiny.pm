@@ -5,7 +5,6 @@ use warnings;
 
 use EventStore::Tiny::Logger;
 use EventStore::Tiny::Event;
-use EventStore::Tiny::DataEvent;
 use EventStore::Tiny::TransformationStore;
 use EventStore::Tiny::EventStream;
 use EventStore::Tiny::Snapshot;
@@ -40,7 +39,7 @@ sub import_events {
     # Create
     my $stream  = EventStore::Tiny::EventStream->new;
     for my $data (@$events) {
-        $stream->add_event(EventStore::Tiny::DataEvent->new(
+        $stream->add_event(EventStore::Tiny::Event->new(
             uuid        => $data->{uuid},
             timestamp   => $data->{timestamp},
             name        => $data->{name},
@@ -356,7 +355,7 @@ Returns a hashref with event type names as keys and event types as values, which
 
     my $event_stream = $store->events;
 
-Returns the internal L<EventStore::Tiny::EventStream> object that stores all concrete events (L<EventStore::Tiny::DataEvent> instances). Should be manipulated by L</store_event> only. Events should never be changed or removed.
+Returns the internal L<EventStore::Tiny::EventStream> object that stores all concrete events (L<EventStore::Tiny::Event> instances). Should be manipulated by L</store_event> only. Events should never be changed or removed.
 
 =head3 trans_store
 

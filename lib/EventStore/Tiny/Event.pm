@@ -11,6 +11,7 @@ use Class::Tiny {
     timestamp   => sub {time},
     name        => sub {die "name is required.\n"},
     trans_store => sub {die "trans_store is required."},
+    data        => sub {{}},
 };
 
 sub BUILD {
@@ -38,7 +39,7 @@ sub apply_to {
     my ($self, $state, $logger) = @_;
 
     # Apply the transformation by side effect
-    $self->transformation->($state);
+    $self->transformation->($state, $self->data);
 
     # Log this event, if logger present
     $logger->($self) if defined $logger;
@@ -50,13 +51,29 @@ sub apply_to {
 # Return a one-line summary of this event
 sub summary {
     my $self = shift;
+
+    # Prepare date and time
     my $decimals    = $self->timestamp =~ /(\.\d+)$/ ? $1 : '';
     my @time_parts  = localtime $self->timestamp;
-    return sprintf '[%s (%4d-%02d-%02dT%02d:%02d:%02d%s)]',
+
+    # Prepare data summary
+    my $data_summary = join ', ' => map {
+        my $d = $self->data->{$_};
+        $d =~ s/\s+/ /g;    # Summarize in-between whitespace
+        $d =~ s/^\s+//;     # Get rid of leading whitespace
+        $d =~ s/\s+$//;     # Get rid of whitespace in the end
+        $d =~ s/['"]+//g;   # Get rid of quotes
+        $d =~ s/^(.{17}).{3,}/$1.../; # Shorten
+        "$_: '$d'"          # Quoted, shortened key-value pair
+    } sort keys %{$self->data};
+
+    # Concatenate
+    return sprintf '[%s (%4d-%02d-%02dT%02d:%02d:%02d%s)%s]',
         $self->name,
         $time_parts[5] + 1900,      # Year
         @time_parts[4, 3, 2, 1, 0], # Rest of time representation
-        $decimals;                  # Possibly empty
+        $decimals,                  # Possibly empty
+        ($data_summary ne '' ? " | $data_summary" : '');
 }
 
 1;
@@ -80,6 +97,7 @@ All these attributes can be manipulated by setters/getters with the attribute's 
     my $event = EventStore::Tiny::Event->new(
         name        => 'Foo',
         trans_store => $ts,
+        data        => {id => 42},
     );
 
 =head3 uuid
@@ -97,6 +115,10 @@ This event's name. Setting this attribute on construction is required.
 =head3 trans_store
 
 The L<EventStore::Tiny::TransformationStore> object where this event's transformation subroutine will be looked up on application.
+
+=head3 data
+
+Concrete data for this event which will be used during application.
 
 =head2 METHODS
 

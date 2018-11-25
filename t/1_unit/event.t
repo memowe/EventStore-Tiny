@@ -6,9 +6,8 @@ use Test::More;
 use EventStore::Tiny::TransformationStore;
 
 use_ok 'EventStore::Tiny::Event';
-use_ok 'EventStore::Tiny::DataEvent';
 
-subtest 'Defaults' => sub {
+subtest 'Construction' => sub {
 
     subtest 'UUID' => sub {
 
@@ -56,6 +55,14 @@ subtest 'Defaults' => sub {
         eval {EventStore::Tiny::Event->new(name => 'foo')};
         like $@ => qr/trans_store is required/,
             'Transformation store is required';
+    };
+
+    subtest 'Data' => sub {
+        my $e = EventStore::Tiny::Event->new(
+            name        => 'foo',
+            trans_store => EventStore::Tiny::TransformationStore->new,
+        );
+        is_deeply $e->data => {}, 'Empty default data hash';
     };
 
     subtest 'Summary' => sub {
@@ -128,7 +135,7 @@ subtest 'Application' => sub {
     };
 };
 
-subtest 'Data event' => sub {
+subtest 'Event with data' => sub {
 
     # Prepare
     my $ts = EventStore::Tiny::TransformationStore->new;
@@ -137,16 +144,8 @@ subtest 'Data event' => sub {
         $state->{$data->{key}} = 42;
     });
 
-    subtest 'Default data' => sub {
-        my $e = EventStore::Tiny::DataEvent->new(
-            name        => 'foo',
-            trans_store => $ts,
-        );
-        is_deeply $e->data => {}, 'Default data is an empty hash';
-    };
-
     # Construct data-driven event
-    my $ev = EventStore::Tiny::DataEvent->new(
+    my $ev = EventStore::Tiny::Event->new(
         name        => 'foo',
         trans_store => $ts,
         data        => {key => 'quux'},
@@ -190,29 +189,6 @@ subtest 'Data event' => sub {
                 "Correct data summary $expected{$ed}";
         }
     };
-};
-
-subtest 'Specialization' => sub {
-
-    # Construct data-driven event
-    my $ts = EventStore::Tiny::TransformationStore->new;
-    $ts->set(foo => sub {
-        my ($state, $data) = @_;
-        $state->{$data->{key}} = 42;
-    });
-    my $ev = EventStore::Tiny::Event->new(
-        name        => 'foo',
-        trans_store => $ts,
-    );
-
-    # Specialize
-    my $de = EventStore::Tiny::DataEvent->new_from_template(
-        $ev, {key => 'quux'}
-    );
-    isa_ok $de => 'EventStore::Tiny::Event';
-
-    # Apply to empty state
-    is $de->apply_to({})->{quux} => 42, 'Correct state-update from new data';
 };
 
 done_testing;
