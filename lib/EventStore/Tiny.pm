@@ -17,7 +17,6 @@ use Data::Compare;  # Exports Compare()
 our $VERSION = '0.6';
 
 use Class::Tiny {
-    registry        => sub {{}},
     events          => sub {EventStore::Tiny::EventStream->new(
                              logger => shift->logger)},
     trans_store     => sub {EventStore::Tiny::TransformationStore->new},
@@ -77,29 +76,25 @@ sub register_event {
 
     # Register transformation
     $self->trans_store->set($name => $transformation);
-
-    return $self->registry->{$name} = EventStore::Tiny::Event->new(
-        name        => $name,
-        trans_store => $self->trans_store,
-        logger      => $self->logger,
-    );
 }
 
 sub event_names {
     my $self = shift;
-    return [sort keys %{$self->registry}];
+    return [$self->trans_store->names];
 }
 
 sub store_event {
     my ($self, $name, $data) = @_;
 
-    # Lookup template event
-    my $template = $self->registry->{$name};
-    die "Unknown event: $name!\n" unless defined $template;
+    # Lookup event type
+    die "Unknown event: $name!\n"
+        unless defined $self->trans_store->get($name);
 
-    # Specialize event with new data
-    my $event = EventStore::Tiny::DataEvent->new_from_template(
-        $template, $data
+    # Create event
+    my $event = EventStore::Tiny::Event->new(
+        name        => $name,
+        trans_store => $self->trans_store,
+        data        => $data,
     );
 
     # Done
@@ -343,13 +338,7 @@ Returns a L<EventStore::Tiny::Snapshot> object which basically consists of the c
 
     my $types = $store->event_names;
 
-Returns an arrayref containing all event type names of registered events, sorted by name. These names are the values of L</registry>.
-
-=head3 registry
-
-    my $user_added = $store->registry->{UserAdded};
-
-Returns a hashref with event type names as keys and event types as values, which are L<EventStore::Tiny::Event> instances. Should be manipulated by L</register_event> only.
+Returns an arrayref containing all event type names of registered events, sorted by name.
 
 =head3 events
 
