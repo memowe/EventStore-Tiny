@@ -324,7 +324,7 @@ Returns the internal L<EventStore::Tiny::EventStream> object that stores all con
 
     my $state = $store->init_state;
 
-Returns a cloned copy of the ininitial state all events are applied on, which was defined by L</init_data> as a hashref.
+Returns a cloned copy of the initial state all events are applied on, which was defined by L</init_data> as a hashref.
 
 =head2 SLACK MODE
 
