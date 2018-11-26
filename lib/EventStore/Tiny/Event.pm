@@ -59,12 +59,24 @@ sub summary {
     # Prepare data summary
     my $data_summary = join ', ' => map {
         my $d = $self->data->{$_};
-        $d =~ s/\s+/ /g;    # Summarize in-between whitespace
-        $d =~ s/^\s+//;     # Get rid of leading whitespace
-        $d =~ s/\s+$//;     # Get rid of whitespace in the end
-        $d =~ s/['"]+//g;   # Get rid of quotes
-        $d =~ s/^(.{17}).{3,}/$1.../; # Shorten
-        "$_: '$d'"          # Quoted, shortened key-value pair
+
+        # Complex / nested data
+        if (my $type = ref $d) {
+            $type eq 'HASH'  ?  "$_: {...}" :
+            $type eq 'ARRAY' ?  "$_: [...]" :
+                                "$_: ...";
+        }
+
+        # Stringify
+        else {
+            $d =~ s/\s+/ /g;    # Summarize in-between whitespace
+            $d =~ s/^\s+//;     # Get rid of leading whitespace
+            $d =~ s/\s+$//;     # Get rid of whitespace in the end
+            $d =~ s/['"]+//g;   # Get rid of quotes
+            $d =~ s/^(.{17}).{3,}/$1.../; # Shorten
+            "$_: '$d'"          # Quoted, shortened key-value pair
+        }
+
     } sort keys %{$self->data};
 
     # Concatenate
