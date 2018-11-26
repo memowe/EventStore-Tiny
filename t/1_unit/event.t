@@ -191,6 +191,30 @@ subtest 'Event with data' => sub {
                     "Correct data summary $expected{$ed}";
             }
         };
+
+        subtest 'Nested data' => sub {
+
+            # Cleanup
+            $ev->data({});
+
+            # Hash
+            $ev->data->{nested} = {answer => 42};
+            like $ev->summary => $summary_rx, 'Correct extended summary';
+            $ev->summary =~ $summary_rx;
+            is $1 => 'nested: {...}', 'Correct hash placeholder';
+
+            # Array
+            $ev->data->{nested} = [1 .. 42];
+            like $ev->summary => $summary_rx, 'Correct extended summary';
+            $ev->summary =~ $summary_rx;
+            is $1 => 'nested: [...]', 'Correct array placeholder';
+
+            # Anything else
+            $ev->data->{nested} = \42;
+            like $ev->summary => $summary_rx, 'Correct extended summary';
+            $ev->summary =~ $summary_rx;
+            is $1 => 'nested: ...', 'Correct placeholder';
+        };
     };
 };
 
