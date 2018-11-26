@@ -57,17 +57,31 @@ sub summary {
     my @time_parts  = localtime $self->timestamp;
 
     # Prepare data summary
-    my $data_summary = join ', ' => map {
-        my $d = $self->data->{$_};
-        $d =~ s/\s+/ /g;    # Summarize in-between whitespace
-        $d =~ s/^\s+//;     # Get rid of leading whitespace
-        $d =~ s/\s+$//;     # Get rid of whitespace in the end
-        $d =~ s/['"]+//g;   # Get rid of quotes
-        $d =~ s/^(.{17}).{3,}/$1.../; # Shorten
-        "$_: '$d'"          # Quoted, shortened key-value pair
-    } sort keys %{$self->data};
+    my @data_strings;
+    for my $name (sort keys %{$self->data}) {
+        my $data = $self->data->{$name}; # Copy, not alias
+
+        # Complex / nested data
+        if (my $type = ref $data) {
+            push @data_strings,
+                $type eq 'HASH'  ?  "$name: {...}" :
+                $type eq 'ARRAY' ?  "$name: [...]" :
+                                    "$name: ...";
+        }
+
+        # Stringify
+        else {
+            $data =~ s/\s+/ /g;     # Summarize in-between whitespace
+            $data =~ s/^\s+//;      # Get rid of leading whitespace
+            $data =~ s/\s+$//;      # Get rid of whitespace in the end
+            $data =~ s/['"]+//g;    # Get rid of quotes
+            $data =~ s/^(.{17}).{3,}/$1.../; # Shorten
+            push @data_strings, "$name: '$data'";
+        }
+    }
 
     # Concatenate
+    my $data_summary = join ', ' => @data_strings;
     return sprintf '[%s (%4d-%02d-%02dT%02d:%02d:%02d%s)%s]',
         $self->name,
         $time_parts[5] + 1900,      # Year
