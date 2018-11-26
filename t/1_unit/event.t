@@ -169,25 +169,28 @@ subtest 'Event with data' => sub {
             (.*)                    # Data representation
         \]$/x;
 
-        # Prepare expected results
-        my %expected = (
-            'quux'                      => 'quux',
-            "A    \nB\n\n\nC     D\n"   => 'A B C D',
-            '123456789012345678'        => '123456789012345678',
-            '1234567890123456789'       => '1234567890123456789',
-            '12345678901234567890'      => '12345678901234567...',
-            '123456789012345678901'     => '12345678901234567...',
-            "12345678901\n4'6' ABCDEF"  => '12345678901 46 AB...',
-        );
+        subtest 'Data abbreviation' => sub {
 
-        # Check
-        for my $ed (sort keys %expected) {
-            $ev->data->{key} = $ed;
-            like $ev->summary => $summary_rx, 'Correct extended summary';
-            $ev->summary =~ $summary_rx;
-            is $1 => "key: '$expected{$ed}'",
-                "Correct data summary $expected{$ed}";
-        }
+            # Prepare expected results
+            my %expected = (
+                'quux'                      => 'quux',
+                "A    \nB\n\n\nC     D\n"   => 'A B C D',
+                '123456789012345678'        => '123456789012345678',
+                '1234567890123456789'       => '1234567890123456789',
+                '12345678901234567890'      => '12345678901234567...',
+                '123456789012345678901'     => '12345678901234567...',
+                "12345678901\n4'6' ABCDEF"  => '12345678901 46 AB...',
+            );
+
+            # Check
+            for my $ed (sort keys %expected) {
+                $ev->data->{key} = $ed;
+                like $ev->summary => $summary_rx, 'Correct extended summary';
+                $ev->summary =~ $summary_rx;
+                is $1 => "key: '$expected{$ed}'",
+                    "Correct data summary $expected{$ed}";
+            }
+        };
     };
 };
 
