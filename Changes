@@ -1,3 +1,6 @@
+????    ????-??-??
+    - ...
+
 0.6     2018-11-26
     - BREAKING CHANGE: Serialization API has changed and uses YAML instead of Storable
     - Transparent refactoring of internal event registration and handling
