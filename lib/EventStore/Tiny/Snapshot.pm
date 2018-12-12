@@ -2,10 +2,11 @@ package EventStore::Tiny::Snapshot;
 
 use strict;
 use warnings;
+use Carp;
 
 use Class::Tiny {
-    state       => sub {die "state is required.\n"},
-    timestamp   => sub {die "timestamp is required.\n"},
+    state       => sub {croak "state is required.\n"},
+    timestamp   => sub {croak "timestamp is required.\n"},
 };
 
 sub BUILD {

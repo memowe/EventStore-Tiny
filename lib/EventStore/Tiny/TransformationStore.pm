@@ -2,6 +2,7 @@ package EventStore::Tiny::TransformationStore;
 
 use strict;
 use warnings;
+use Carp;
 
 use Class::Tiny {
     _transformation => sub {{}},
@@ -22,7 +23,7 @@ sub set {
     my ($self, $name, $transformation) = @_;
 
     # Guard
-    die "Event $name cannot be replaced!\n"
+    croak "Event $name cannot be replaced!\n"
         if exists $self->_transformation->{$name};
 
     # Replace

@@ -2,6 +2,7 @@ package EventStore::Tiny::Event;
 
 use strict;
 use warnings;
+use Carp;
 
 use UUID::Tiny qw(create_uuid_as_string);
 use Time::HiRes qw(time);
@@ -9,8 +10,8 @@ use Time::HiRes qw(time);
 use Class::Tiny {
     uuid        => sub {create_uuid_as_string},
     timestamp   => sub {time},
-    name        => sub {die "name is required.\n"},
-    trans_store => sub {die "trans_store is required."},
+    name        => sub {croak "name is required.\n"},
+    trans_store => sub {croak "trans_store is required."},
     data        => sub {{}},
 };
 
@@ -30,7 +31,7 @@ sub transformation {
     my $self = shift;
     my $name = $self->name;
     my $t    = $self->trans_store->get($name);
-    die "Transformation for $name not found!\n" unless defined $t;
+    croak "Transformation for $name not found!\n" unless defined $t;
     return $t;
 }
 

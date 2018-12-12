@@ -2,6 +2,7 @@ package EventStore::Tiny;
 
 use strict;
 use warnings;
+use Carp;
 
 use EventStore::Tiny::Logger;
 use EventStore::Tiny::Event;
@@ -87,7 +88,7 @@ sub store_event {
     my ($self, $name, $data) = @_;
 
     # Lookup event type
-    die "Unknown event: $name!\n"
+    croak "Unknown event: $name!\n"
         unless defined $self->trans_store->get($name);
 
     # Create event

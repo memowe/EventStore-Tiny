@@ -1,5 +1,5 @@
 ????    ????-??-??
-    - ...
+    - Use Carp::croak instead of die to get errors out of caller's perspective
 
 0.6     2018-11-26
     - BREAKING CHANGE: Serialization API has changed and uses YAML instead of Storable
