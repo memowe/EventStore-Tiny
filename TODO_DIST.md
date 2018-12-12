@@ -1,5 +1,8 @@
 - [ ] Changes
 - [ ] Credits (README.md and lib/EventStore/Tiny.pm)
 - [ ] Version (lib/EventStore/Tiny.pm)
-- [ ] make manifest
-- [ ] make distcheck
+- [ ] make distclean
+- [ ] *make manifest* ?
+- [ ] make dist
+- [ ] Upload to PAUSE
+- [ ] Create GitHub release (with Changes)
