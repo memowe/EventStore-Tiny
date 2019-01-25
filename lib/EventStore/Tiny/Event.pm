@@ -161,7 +161,7 @@ L<EventStore::Tiny>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2018 Mirko Westermeier (mail: mirko@westermeier.de)
+Copyright (c) 2018-2019 Mirko Westermeier (mail: mirko@westermeier.de)
 
 Released under the MIT License (see LICENSE.txt for details).
 
