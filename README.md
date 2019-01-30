@@ -2,7 +2,6 @@
 [![Travis CI tests](https://travis-ci.org/memowe/EventStore-Tiny.svg?branch=master)](https://travis-ci.org/memowe/EventStore-Tiny)
 [![Codecov test coverage](https://codecov.io/gh/memowe/EventStore-Tiny/branch/master/graph/badge.svg)](https://codecov.io/gh/memowe/EventStore-Tiny)
 [![Coveralls test coverage](https://coveralls.io/repos/github/memowe/EventStore-Tiny/badge.svg?branch=master)](https://coveralls.io/github/memowe/EventStore-Tiny?branch=master)
-[![CPANTS kwalitee score](https://cpants.cpanauthors.org/dist/EventStore-Tiny.png)](http://cpants.cpanauthors.org/dist/EventStore-Tiny)
 <br>
 [![CPAN testers reports](https://img.shields.io/badge/testers-reports-blue.svg)](http://www.cpantesters.org/distro/E/EventStore-Tiny.html?distmat=1)
 [![CPAN testers matrix](https://img.shields.io/badge/testers-matrix-blue.svg)](http://matrix.cpantesters.org/?dist=EventStore-Tiny)

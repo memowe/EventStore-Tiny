@@ -190,8 +190,6 @@ EventStore::Tiny - A minimal event sourcing framework.
     <img alt="Codecov test coverage" src="https://codecov.io/gh/memowe/EventStore-Tiny/branch/master/graph/badge.svg"></a>
 <a href="https://coveralls.io/github/memowe/EventStore-Tiny?branch=master">
     <img alt="Coveralls test coverage" src="https://coveralls.io/repos/github/memowe/EventStore-Tiny/badge.svg?branch=master"></a>
-<a href="http://cpants.cpanauthors.org/dist/EventStore-Tiny">
-    <img alt="CPANTS kwalitee score" src="https://cpants.cpanauthors.org/dist/EventStore-Tiny.png"></a>
 
 <br><br>
 
