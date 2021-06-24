@@ -1,12 +1,12 @@
-[![CPAN version](https://badge.fury.io/pl/EventStore-Tiny.svg)](https://badge.fury.io/pl/EventStore-Tiny)
-[![Travis CI tests](https://travis-ci.org/memowe/EventStore-Tiny.svg?branch=master)](https://travis-ci.org/memowe/EventStore-Tiny)
-[![Codecov test coverage](https://codecov.io/gh/memowe/EventStore-Tiny/branch/master/graph/badge.svg)](https://codecov.io/gh/memowe/EventStore-Tiny)
-[![Coveralls test coverage](https://coveralls.io/repos/github/memowe/EventStore-Tiny/badge.svg?branch=master)](https://coveralls.io/github/memowe/EventStore-Tiny?branch=master)
-<br>
 [![CPAN testers reports](https://img.shields.io/badge/testers-reports-blue.svg)](http://www.cpantesters.org/distro/E/EventStore-Tiny.html?distmat=1)
 [![CPAN testers matrix](https://img.shields.io/badge/testers-matrix-blue.svg)](http://matrix.cpantesters.org/?dist=EventStore-Tiny)
+[![CPAN version](https://badge.fury.io/pl/EventStore-Tiny.svg)](https://badge.fury.io/pl/EventStore-Tiny)
 [![GitHub repository](https://img.shields.io/badge/github-code-blue.svg)](https://github.com/memowe/EventStore-Tiny)
 [![GitHub issue tracker](https://img.shields.io/badge/github-issues-blue.svg)](https://github.com/memowe/EventStore-Tiny/issues)
+<br>
+[![Linux tests](https://github.com/memowe/EventStore-Tiny/actions/workflows/linux-tests.yml/badge.svg?branch=main)](https://github.com/memowe/EventStore-Tiny/actions/workflows/linux-tests.yml)
+[![Mac OS tests](https://github.com/memowe/EventStore-Tiny/actions/workflows/mac-tests.yml/badge.svg?branch=main)](https://github.com/memowe/EventStore-Tiny/actions/workflows/mac-tests.yml)
+[![Windows tests](https://github.com/memowe/EventStore-Tiny/actions/workflows/windows-tests.yml/badge.svg?branch=main)](https://github.com/memowe/EventStore-Tiny/actions/workflows/windows-tests.yml)
 
 # EventStore::Tiny
 
