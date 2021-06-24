@@ -1,3 +1,4 @@
+- [ ] Test with TEST\_AUTHOR=1
 - [ ] Changes
 - [ ] Credits (README.md and lib/EventStore/Tiny.pm)
 - [ ] Version (lib/EventStore/Tiny.pm)
