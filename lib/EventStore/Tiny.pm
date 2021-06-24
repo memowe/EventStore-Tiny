@@ -17,7 +17,7 @@ use IO::File;
 use YAML::Syck;     # Exports Dump(), Load()
 use Data::Compare;  # Exports Compare()
 
-our $VERSION = '0.6';
+our $VERSION = '0.7';
 
 use Class::Tiny {
     events          => sub {EventStore::Tiny::EventStream->new(
@@ -364,7 +364,7 @@ EventStore::Tiny's source repository is hosted on L<GitHub|https://github.com/me
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2018-2019 L<Mirko Westermeier|http://mirko.westermeier.de> (L<@memowe|https://github.com/memowe>, L<mirko@westermeier.de|mailto:mirko@westermeier.de>)
+Copyright (c) 2018-2021 L<Mirko Westermeier|http://mirko.westermeier.de> (L<@memowe|https://github.com/memowe>, L<mirko@westermeier.de|mailto:mirko@westermeier.de>)
 
 Released under the MIT License (see LICENSE.txt for details).
 
