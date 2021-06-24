@@ -2,6 +2,8 @@ package EventStore::Tiny::Event;
 
 use strict;
 use warnings;
+use feature 'signatures';
+no warnings 'experimental::signatures';
 use Carp;
 
 use UUID::Tiny qw(create_uuid_as_string);
@@ -15,8 +17,7 @@ use Class::Tiny {
     data        => sub {{}},
 };
 
-sub BUILD {
-    my $self = shift;
+sub BUILD ($self, @) { # @ is neccessary for Class::Tiny
 
     # Set/Test non-lazy
     $self->name;
@@ -27,8 +28,7 @@ sub BUILD {
     return;
 }
 
-sub transformation {
-    my $self = shift;
+sub transformation ($self) {
     my $name = $self->name;
     my $t    = $self->trans_store->get($name);
     croak "Transformation for $name not found!\n" unless defined $t;
@@ -36,8 +36,7 @@ sub transformation {
 }
 
 # Lets transformation work on state by side-effect
-sub apply_to {
-    my ($self, $state, $logger) = @_;
+sub apply_to ($self, $state, $logger = undef) {
 
     # Apply the transformation by side effect
     $self->transformation->($state, $self->data);
@@ -50,8 +49,7 @@ sub apply_to {
 }
 
 # Return a one-line summary of this event
-sub summary {
-    my $self = shift;
+sub summary ($self) {
 
     # Prepare date and time
     my $decimals    = $self->timestamp =~ /(\.\d+)$/ ? $1 : '';

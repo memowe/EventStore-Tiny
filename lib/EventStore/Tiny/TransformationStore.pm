@@ -2,25 +2,24 @@ package EventStore::Tiny::TransformationStore;
 
 use strict;
 use warnings;
+use feature 'signatures';
+no warnings 'experimental::signatures';
 use Carp;
 
 use Class::Tiny {
     _transformation => sub {{}},
 };
 
-sub names {
-    my $self = shift;
+sub names ($self) {
     my @sorted_names = sort keys %{$self->_transformation};
     return @sorted_names; # return sort is undefined in scalar context
 }
 
-sub get {
-    my ($self, $name) = @_;
+sub get ($self, $name) {
     return $self->_transformation->{$name};
 }
 
-sub set {
-    my ($self, $name, $transformation) = @_;
+sub set ($self, $name, $transformation) {
 
     # Guard
     croak "Event $name cannot be replaced!\n"

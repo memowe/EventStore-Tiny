@@ -20,8 +20,7 @@ use EventStore::Tiny;
 my $store = EventStore::Tiny->new;
 
 # Register event type
-$store->register_event(UserAdded => sub {
-    my ($state, $data) = @_;
+$store->register_event(UserAdded => sub ($state, $data) {
 
     # Use $data to inject the new user into the given $state
     $state->{users}{$data->{id}} = {

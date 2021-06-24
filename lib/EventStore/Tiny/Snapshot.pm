@@ -2,6 +2,8 @@ package EventStore::Tiny::Snapshot;
 
 use strict;
 use warnings;
+use feature 'signatures';
+no warnings 'experimental::signatures';
 use Carp;
 
 use Class::Tiny {
@@ -9,8 +11,7 @@ use Class::Tiny {
     timestamp   => sub {croak "timestamp is required.\n"},
 };
 
-sub BUILD {
-    my $self = shift;
+sub BUILD ($self, @) { # @ is neccessary for Class::Tiny
 
     # Check non-lazy
     $self->state;

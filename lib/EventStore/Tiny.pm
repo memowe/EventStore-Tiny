@@ -2,6 +2,8 @@ package EventStore::Tiny;
 
 use strict;
 use warnings;
+use feature 'signatures';
+no warnings 'experimental::signatures';
 use Carp;
 
 use EventStore::Tiny::Logger;
@@ -27,8 +29,7 @@ use Class::Tiny {
     cache_distance  => 0, # Default: store snapshot each time. no caching: undef
 }, '_cached_snapshot';
 
-sub import_events {
-    my ($self, $fn) = @_;
+sub import_events ($self, $fn) {
 
     # Rerieve
     my $file    = IO::File->new($fn, 'r');
@@ -52,8 +53,7 @@ sub import_events {
     $self->events($stream);
 }
 
-sub export_events {
-    my ($self, $fn) = @_;
+sub export_events ($self, $fn) {
 
     # Simplify
     my @events = ();
@@ -72,20 +72,17 @@ sub export_events {
     $file->close;
 }
 
-sub register_event {
-    my ($self, $name, $transformation) = @_;
+sub register_event ($self, $name, $transformation) {
 
     # Register transformation
     $self->trans_store->set($name => $transformation);
 }
 
-sub event_names {
-    my $self = shift;
+sub event_names ($self) {
     return [$self->trans_store->names];
 }
 
-sub store_event {
-    my ($self, $name, $data) = @_;
+sub store_event ($self, $name, $data = undef) {
 
     # Lookup event type
     croak "Unknown event: $name!\n"
@@ -102,18 +99,13 @@ sub store_event {
     return $self->events->add_event($event);
 }
 
-sub init_state {
-    my $self = shift;
+sub init_state ($self) {
 
     # Clone init data
     return clone($self->init_data);
 }
 
-sub snapshot {
-    my ($self, $timestamp) = @_;
-
-    # Work on latest timestamp if not specified
-    $timestamp //= $self->events->last_timestamp;
+sub snapshot ($self, $timestamp = $self->events->last_timestamp) {
     my $es = $self->events->before($timestamp);
 
     # Check if the cached snapshot can be used
@@ -158,8 +150,7 @@ sub snapshot {
     return $snapshot;
 }
 
-sub is_correct_snapshot {
-    my ($self, $snapshot) = @_;
+sub is_correct_snapshot ($self, $snapshot) {
 
     # Replay events before snapshot time
     my $our_sn = $self->snapshot($snapshot->timestamp);
@@ -213,8 +204,7 @@ EventStore::Tiny - A minimal event sourcing framework.
     my $store = EventStore::Tiny->new;
 
     # Register event type
-    $store->register_event(UserAdded => sub {
-        my ($state, $data) = @_;
+    $store->register_event(UserAdded => sub ($state, $data) {
 
         # Use $data to inject the new user into the given $state
         $state->{users}{$data->{id}} = {
@@ -306,8 +296,7 @@ Serializes the event stream to the file system. It can be imported back via L</i
 
 =head3 register_event
 
-    $store->register_event(ConnectionRemoved => sub {
-        my ($state, $data) = @_;
+    $store->register_event(ConnectionRemoved => sub ($state, $data) {
         # Change $state depending on $data (by side-effect)
     });
 

@@ -2,13 +2,14 @@ package EventStore::Tiny::Logger;
 
 use strict;
 use warnings;
+use feature 'signatures';
+no warnings 'experimental::signatures';
 
 use Class::Tiny {
     print_target => sub {select}, # Selected output file handle
 };
 
-sub log_event {
-    my ($self, $event) = @_;
+sub log_event ($self, $event) {
 
     # Stringify
     use Data::Dump 'dump';
@@ -19,8 +20,7 @@ sub log_event {
     return $self->print_target->print("$output\n");
 }
 
-sub log_cb {
-    my ($self, @args) = @_;
+sub log_cb ($self, @args) {
 
     # Create a new logger if called as a package procedure
     $self = EventStore::Tiny::Logger->new(@args) unless ref $self;
