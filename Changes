@@ -1,4 +1,4 @@
-0.7     2021-06-24
+0.72    2021-06-25
     - BREAKING CHANGE: lift minimum perl version to 5.20 by using signatures
     - Use Carp::croak instead of die to get errors out of caller's perspective
 

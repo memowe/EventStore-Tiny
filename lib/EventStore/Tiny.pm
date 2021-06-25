@@ -17,7 +17,7 @@ use IO::File;
 use YAML::Syck;     # Exports Dump(), Load()
 use Data::Compare;  # Exports Compare()
 
-our $VERSION = '0.7';
+our $VERSION = '0.72';
 
 use Class::Tiny {
     events          => sub {EventStore::Tiny::EventStream->new(
