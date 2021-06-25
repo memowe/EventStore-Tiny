@@ -2,6 +2,7 @@
 - [ ] Changes
 - [ ] Credits (README.md and lib/EventStore/Tiny.pm)
 - [ ] Version (lib/EventStore/Tiny.pm)
+- [ ] Check min perl versions (both!) in Makefile.PL
 - [ ] make distclean
 - [ ] *make manifest* ?
 - [ ] make dist
