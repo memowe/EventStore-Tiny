@@ -177,21 +177,17 @@ EventStore::Tiny - A minimal event sourcing framework.
     <img alt="GitHub repository" src="https://img.shields.io/badge/github-code-blue.svg"></a>
 <a href="https://github.com/memowe/EventStore-Tiny/issues">
     <img alt="GitHub issue tracker" src="https://img.shields.io/badge/github-issues-blue.svg"></a>
+<a href="https://github.com/memowe/EventStore-Tiny/actions/workflows/linux-tests.yml">
+    <img alt="Linux tests" src="https://github.com/memowe/EventStore-Tiny/actions/workflows/linux-tests.yml/badge.svg?branch=main"></a>
+
+<br><br>
+
 <a href="https://badge.fury.io/pl/EventStore-Tiny">
     <img alt="CPAN version" src="https://badge.fury.io/pl/EventStore-Tiny.svg"></a>
 <a href="http://www.cpantesters.org/distro/E/EventStore-Tiny.html?distmat=1">
     <img alt="CPAN testers reports" src="https://img.shields.io/badge/testers-reports-blue.svg"></a>
 <a href="http://matrix.cpantesters.org/?dist=EventStore-Tiny">
     <img alt="CPAN testers matrix" src="https://img.shields.io/badge/testers-matrix-blue.svg"></a>
-
-<br><br>
-
-<a href="https://github.com/memowe/EventStore-Tiny/actions/workflows/linux-tests.yml">
-    <img alt="Linux tests" src="https://github.com/memowe/EventStore-Tiny/actions/workflows/linux-tests.yml/badge.svg?branch=main"></a>
-<a href="https://github.com/memowe/EventStore-Tiny/actions/workflows/mac-tests.yml">
-    <img alt="Mac OS tests" src="https://github.com/memowe/EventStore-Tiny/actions/workflows/mac-tests.yml/badge.svg?branch=main"></a>
-<a href="https://github.com/memowe/EventStore-Tiny/actions/workflows/windows-tests.yml">
-    <img alt="Windows tests" src="https://github.com/memowe/EventStore-Tiny/actions/workflows/windows-tests.yml/badge.svg?branch=main"></a>
 
 </p>
 

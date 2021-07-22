@@ -1,12 +1,10 @@
 [![CPAN testers reports](https://img.shields.io/badge/testers-reports-blue.svg)](http://www.cpantesters.org/distro/E/EventStore-Tiny.html?distmat=1)
 [![CPAN testers matrix](https://img.shields.io/badge/testers-matrix-blue.svg)](http://matrix.cpantesters.org/?dist=EventStore-Tiny)
 [![CPAN version](https://badge.fury.io/pl/EventStore-Tiny.svg)](https://badge.fury.io/pl/EventStore-Tiny)
+<br>
 [![GitHub repository](https://img.shields.io/badge/github-code-blue.svg)](https://github.com/memowe/EventStore-Tiny)
 [![GitHub issue tracker](https://img.shields.io/badge/github-issues-blue.svg)](https://github.com/memowe/EventStore-Tiny/issues)
-<br>
 [![Linux tests](https://github.com/memowe/EventStore-Tiny/actions/workflows/linux-tests.yml/badge.svg?branch=main)](https://github.com/memowe/EventStore-Tiny/actions/workflows/linux-tests.yml)
-[![Mac OS tests](https://github.com/memowe/EventStore-Tiny/actions/workflows/mac-tests.yml/badge.svg?branch=main)](https://github.com/memowe/EventStore-Tiny/actions/workflows/mac-tests.yml)
-[![Windows tests](https://github.com/memowe/EventStore-Tiny/actions/workflows/windows-tests.yml/badge.svg?branch=main)](https://github.com/memowe/EventStore-Tiny/actions/workflows/windows-tests.yml)
 
 # EventStore::Tiny
 
